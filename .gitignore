@@ -1,4 +1,8 @@
+doc/*
 metadata/*
+!metadata/svd
+metadata/svd/*
+!metadata/svd/STM32
 project/build
 tools/stm32-mcu-info
 tools/svd-from-mcu
