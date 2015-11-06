@@ -1,0 +1,6 @@
+#!/bin/sh
+URL=http://www.st.com/stonline/stappl/productcatalog/jsp/jsonDataForL3.jsp?subclassId=1169
+BASE_DIR=$(dirname $0)/..
+FILE=$BASE_DIR/metadata/stm32_catalog.json
+echo "Downloading $URL to $FILE..."
+curl -o $FILE $URL

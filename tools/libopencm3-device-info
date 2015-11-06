@@ -1,0 +1,15 @@
+#!/bin/sh
+if (($# != 1))
+then
+	echo "Usage: $0 mcu-model"
+else
+	BASE_DIR=$(dirname $0)/..
+	MCU_INFO=$(awk -v PAT="$1" -f $BASE_DIR/metadata/libopencm3_devices.awk $BASE_DIR/metadata/libopencm3_devices.data)
+	if [ -z "$MCU_INFO" ]
+	then
+		echo "$1 not found in libopencm3 device database" 1>&2
+		exit -1
+	else
+		echo $MCU_INFO | sed "s/\-lopencm3_stm32.. //"
+	fi
+fi

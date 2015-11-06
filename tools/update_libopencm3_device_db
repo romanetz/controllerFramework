@@ -1,0 +1,12 @@
+#!/bin/sh
+URL=https://raw.githubusercontent.com/libopencm3/libopencm3/master/ld/devices.data
+BASE_DIR=$(dirname $0)/..
+FILE=$BASE_DIR/metadata/libopencm3_devices.data
+echo "Downloading $URL to $FILE..."
+curl -o $FILE $URL
+
+URL=https://raw.githubusercontent.com/libopencm3/libopencm3/master/scripts/genlink.awk
+FILE=$BASE_DIR/metadata/libopencm3_devices.awk
+echo "Downloading $URL to $FILE..."
+curl -o $FILE $URL
+

@@ -1,2 +1,2 @@
 # controllerFramework
-Framework to developing hardware programming projects
+Framework for developing hardware programming projects
