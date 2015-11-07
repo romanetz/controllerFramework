@@ -27,6 +27,44 @@ bool MPU6050::powerOff() {
 	return setByteRegBits(MPU6050_PWR_MGMT_1, 1 << MPU6050_SLEEP);
 }
 
+bool MPU6050::setGyroScale(MPU6050GyroScale scale) {
+	if (!writeByteReg(MPU6050_GYRO_CONFIG, scale)) return false;
+	switch (scale) {
+		case MPU6050_GYROSCALE_250DEG:
+			_gyroScaleValue = 1.0f / 131.0f;
+			break;
+		case MPU6050_GYROSCALE_500DEG:
+			_gyroScaleValue = 1.0f / 65.5f;
+			break;
+		case MPU6050_GYROSCALE_1000DEG:
+			_gyroScaleValue = 1.0f / 32.8f;
+			break;	
+		case MPU6050_GYROSCALE_2000DEG:
+			_gyroScaleValue = 1.0f / 16.4f;
+			break;
+	}
+	return true;
+}
+		
+bool MPU6050::setAccelScale(MPU6050AccelScale scale) {
+	if (!writeByteReg(MPU6050_ACCEL_CONFIG, scale)) return false;
+	switch (scale) {
+		case MPU6050_ACCELSCALE_2G:
+			_accelScaleValue = 1.0f / 16384.0f;
+			break;
+		case MPU6050_ACCELSCALE_4G:
+			_accelScaleValue = 1.0f / 8192.0f;
+			break;
+		case MPU6050_ACCELSCALE_8G:
+			_accelScaleValue = 1.0f / 4096.0f;
+			break;
+		case MPU6050_ACCELSCALE_16G:
+			_accelScaleValue = 1.0f / 2048.0f;
+			break;
+	}
+	return true;
+}
+
 bool MPU6050::enableI2CByPass(bool setting) {
 	if (setting) {
 		return setByteRegBits(MPU6050_INT_PIN_CFG, 1 << MPU6050_I2C_BYPASS_EN);
