@@ -33,6 +33,7 @@ int main(void) {
 		usart1.printf("BUTTON1=%i BUTTON2=%i ", button1.read(), button2.read());
 		if (mpu6050.detect()) {
 			mpu6050.powerOn();
+			mpu6050.enableI2CByPass(true);
 			mpu6050.updateData();
 			usart1.printf("AX=%6i,AY=%6i,AZ=%6i,GX=%6i,GY=%6i,GZ=%6i,T=%6i", mpu6050.rawAccelX(), mpu6050.rawAccelY(), mpu6050.rawAccelZ(),
 				mpu6050.rawGyroX(), mpu6050.rawGyroY(), mpu6050.rawGyroZ(), mpu6050.temperature());

@@ -21,6 +21,8 @@ class MPU6050: public SimpleI2CDevice {
 		
 		bool powerOff();
 		
+		bool enableI2CByPass(bool setting);
+		
 		bool updateData();
 		
 		int16_t rawAccelX() { return _rawAccelX; }

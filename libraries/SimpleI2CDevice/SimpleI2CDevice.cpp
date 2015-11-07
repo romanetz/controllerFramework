@@ -36,3 +36,21 @@ uint16_t SimpleI2CDevice::readWordReg(uint8_t reg) {
 	}
 	return 0;
 }
+
+bool SimpleI2CDevice::setByteRegBits(uint8_t reg, uint8_t bits) {
+	uint8_t value;
+	if (!readReg(reg, &value, sizeof(value))) return false;
+	return writeByteReg(reg, value | bits);
+}
+		
+bool SimpleI2CDevice::clearByteRegBits(uint8_t reg, uint8_t bits) {
+	uint8_t value;
+	if (!readReg(reg, &value, sizeof(value))) return false;
+	return writeByteReg(reg, value & ~bits);
+}
+
+bool SimpleI2CDevice::toggleByteRegBits(uint8_t reg, uint8_t bits) {
+	uint8_t value;
+	if (!readReg(reg, &value, sizeof(value))) return false;
+	return writeByteReg(reg, value ^ bits);
+}

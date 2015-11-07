@@ -7,9 +7,9 @@ struct MPU6050DataRegs {
 } __attribute__((packed));
 
 MPU6050::MPU6050(I2CBus& i2c, uint8_t addr) : SimpleI2CDevice(i2c, addr) {
-	if (detect()) {
+	/* if (detect()) {
 		powerOn();
-	}
+	} */
 }
 
 bool MPU6050::detect() {
@@ -20,11 +20,19 @@ bool MPU6050::detect() {
 }
 
 bool MPU6050::powerOn() {
-	return writeByteReg(MPU6050_PWR_MGMT_1, MPU6050_CLKSEL_INTERNAL);
+	return clearByteRegBits(MPU6050_PWR_MGMT_1, (1 << MPU6050_DEVICE_RESET) | (1 << MPU6050_SLEEP));
 }
 
 bool MPU6050::powerOff() {
-	return writeByteReg(MPU6050_PWR_MGMT_1, MPU6050_DEVICE_RESET);
+	return setByteRegBits(MPU6050_PWR_MGMT_1, 1 << MPU6050_SLEEP);
+}
+
+bool MPU6050::enableI2CByPass(bool setting) {
+	if (setting) {
+		return setByteRegBits(MPU6050_INT_PIN_CFG, 1 << MPU6050_I2C_BYPASS_EN);
+	} else {
+		return clearByteRegBits(MPU6050_INT_PIN_CFG, 1 << MPU6050_I2C_BYPASS_EN);
+	}
 }
 
 bool MPU6050::updateData() {

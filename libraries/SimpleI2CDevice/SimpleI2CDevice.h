@@ -24,6 +24,12 @@ class SimpleI2CDevice {
 		
 		uint16_t readWordReg(uint8_t reg);
 		
+		bool setByteRegBits(uint8_t reg, uint8_t bits);
+		
+		bool clearByteRegBits(uint8_t reg, uint8_t bits);
+		
+		bool toggleByteRegBits(uint8_t reg, uint8_t bits);
+		
 };
 
 #endif
