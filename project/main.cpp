@@ -1,6 +1,7 @@
 #include <platform.h>
 #include <mpu6050.h>
 #include <hmc5883.h>
+#include <ms5611.h>
 
 STM32RCC rcc(STM32_CLOCKSOURCE_PLL, 8000000, STM32_CLOCKSOURCE_HSE, 72000000);
 SysTick sysTick(1000, rcc.systemFrequency());
@@ -23,6 +24,7 @@ STM32USART usart1(USART1, STM32_USART_TX_RX, 9600);
 
 MPU6050 mpu6050(i2c1, MPU6050_DEFAULT_ADDRESS);
 HMC5883 hmc5883(i2c1, HMC5883_I2C_ADDRESS);
+MS5611 ms5611(i2c1, MS5611_DEFAULT_ADDRESS);
 
 int main(void) {
 	led1.clear();
@@ -41,10 +43,14 @@ int main(void) {
 				mpu6050.rawGyroX(), mpu6050.rawGyroY(), mpu6050.rawGyroZ(), mpu6050.temperature());
 		}
 		if (hmc5883.detect()) {
-			hmc5883.setDataRate(HMC5883_DATARATE_75_HZ);
+			hmc5883.setDataRate(HMC5883_DATARATE_75HZ);
 			hmc5883.setMode(HMC5883_MODE_CONTINUOS);
 			hmc5883.updateData();
-			usart1.printf("MX=%6i,MY=%6i,MZ=%6i", hmc5883.rawValueX(), hmc5883.rawValueY(), hmc5883.rawValueZ());
+			usart1.printf("MX=%6i,MY=%6i,MZ=%6i ", hmc5883.rawValueX(), hmc5883.rawValueY(), hmc5883.rawValueZ());
+		}
+		if (ms5611.detect()) {
+			//ms5611.reset();
+			usart1.printf("MS5611");
 		}
 		usart1.write("\r\n");
 	}
