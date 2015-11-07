@@ -73,6 +73,17 @@ struct SCBRegs {
 #define SCB_AIRCR_VECTRESET (1 << 0)
 #endif
 
+#if defined(__ARM_ARCH_7M__) || defined(__ARM_ARCH_7EM__)
+
+#define SCB_CPACR_NONE 0 /* Access denied */
+#define SCB_CPACR_PRIV 1 /* Privileged access only */
+#define SCB_CPACR_FULL 3 /* Full access */
+
+#define SCB_CPACR_CP10 (1 << 20)
+#define SCB_CPACR_CP11 (1 << 22)
+
+#endif
+
 void SCB_ResetSystem(void);
 
 #endif

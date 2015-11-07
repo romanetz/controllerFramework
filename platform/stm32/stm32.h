@@ -13,5 +13,11 @@
 #include <stm32_usart.h>
 #include <stm32_i2c.h>
 
+inline void platform_init() {
+#if defined STM32F4 || defined STM32F3
+	SCB->CPACR |= SCB_CPACR_FULL * (SCB_CPACR_CP10 | SCB_CPACR_CP11);
+#endif
+}
+
 #endif
 /** @} */

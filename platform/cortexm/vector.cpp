@@ -1,3 +1,4 @@
+#include <platform.h>
 #include <cortexm.h>
 
 typedef void (*funcptr_t)(void);
@@ -9,6 +10,7 @@ extern funcptr_t __init_array_start, __init_array_end;
 extern funcptr_t __fini_array_start, __fini_array_end;
 
 int main(void);
+void platform_init(void);
 
 extern "C" void __attribute__((naked)) reset_handler(void) {
 	unsigned *dst = &_data;
@@ -25,6 +27,7 @@ extern "C" void __attribute__((naked)) reset_handler(void) {
 	for (funcptr_t *func = &__init_array_start; func < &__init_array_end; func++) {
 		(*func)();
 	}
+	platform_init();
 	main();
 	for (funcptr_t *func = &__fini_array_start; func < &__fini_array_end; func++) {
 		(*func)();
