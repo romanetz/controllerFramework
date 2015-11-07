@@ -11,6 +11,7 @@
 #include <stm32_rcc.h>
 #include <stm32_gpio.h>
 #include <stm32_usart.h>
+#include <stm32_i2c.h>
 
 #endif
 /** @} */
