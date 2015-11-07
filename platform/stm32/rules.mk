@@ -30,5 +30,5 @@ load: $(BUILD_DIR)/$(PROJECT_NAME).bin
 	st-flash write $(BUILD_DIR)/$(PROJECT_NAME).bin 0x08000000
 
 boot: $(BUILD_DIR)/$(PROJECT_NAME).bin
-	stm32flash -w $(BUILD_DIR)/$(PROJECT_NAME).bin $(STM32_BOOT_SERIAL_PORT)
+	stm32flash -w $(BUILD_DIR)/$(PROJECT_NAME).bin $(STM32_BOOT_SERIALPORT)
 
