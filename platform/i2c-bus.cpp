@@ -1,6 +1,6 @@
 #include <i2c-bus.h>
 
-int I2CBus::masterTxRx(uint32_t slaveAddress, const void *txBuffer, unsigned int txLen, void *rxBuffer, unsigned int rxLen, uint64_t timeout) {
+int I2CBus::masterTxRx(uint16_t slaveAddress, const void *txBuffer, unsigned int txLen, void *rxBuffer, unsigned int rxLen, uint64_t timeout) {
 	I2CMessage messages[2];
 	messages[0].write = true;
 	messages[0].buffer = (void*)txBuffer;
