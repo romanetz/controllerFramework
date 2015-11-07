@@ -22,7 +22,7 @@ struct I2CMessage {
 	\brief I2C bus transaction information
 */
 struct I2CTransaction {
-	uint32_t slaveAddress; ///< Slave address
+	uint16_t slaveAddress; ///< Slave address
 	unsigned int messageCount; ///< Count of messages
 	const I2CMessage *messages; ///< Pointer to array of I2C messages
 };
@@ -59,7 +59,7 @@ class I2CBus {
 			\param[in] timeout Timeout value in microseconds.
 			\return Returns 0 if transmit error, 1 if receive error or 2 if both operations sucessfully completed.
 		*/
-		int masterTxRx(uint32_t slaveAddress, const void *txBuffer, unsigned int txLen,
+		int masterTxRx(uint16_t slaveAddress, const void *txBuffer, unsigned int txLen,
 			void *rxBuffer = 0, unsigned int rxLen = 0, uint64_t timeout = 10000);
 };
 
