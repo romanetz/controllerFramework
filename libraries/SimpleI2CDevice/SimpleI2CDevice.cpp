@@ -13,3 +13,26 @@ bool SimpleI2CDevice::readReg(uint8_t reg, void *buffer, int bufferSize) {
 	return _i2c.masterTxRx(_addr, txBuf, sizeof(txBuf), buffer, bufferSize) == 2;
 }
 
+bool SimpleI2CDevice::writeByteReg(uint8_t reg, uint8_t data) {
+	return writeReg(reg, &data, sizeof(data));
+}
+
+bool SimpleI2CDevice::writeWordReg(uint8_t reg, uint16_t data) {
+	return writeReg(reg, &data, sizeof(data));
+}
+
+uint8_t SimpleI2CDevice::readByteReg(uint8_t reg) {
+	uint8_t value;
+	if (readReg(reg, &value, sizeof(value))) {
+		return value;
+	}
+	return 0;
+}
+		
+uint16_t SimpleI2CDevice::readWordReg(uint8_t reg) {
+	uint16_t value;
+	if (readReg(reg, &value, sizeof(value))) {
+		return value;
+	}
+	return 0;
+}

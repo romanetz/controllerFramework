@@ -14,31 +14,15 @@ class SimpleI2CDevice {
 		
 		bool writeReg(uint8_t reg, void *data, int dataLen);
 		
-		bool writeByteReg(uint8_t reg, uint8_t data) {
-			return writeReg(reg, &data, sizeof(data));
-		}
+		bool writeByteReg(uint8_t reg, uint8_t data);
 		
-		bool writeWordReg(uint8_t reg, uint16_t data) {
-			return writeReg(reg, &data, sizeof(data));
-		}
+		bool writeWordReg(uint8_t reg, uint16_t data);
 		
 		bool readReg(uint8_t reg, void *buffer, int bufferSize);
 		
-		uint8_t readByteReg(uint8_t reg) {
-			uint8_t value;
-			if (readReg(reg, &value, sizeof(value))) {
-				return value;
-			}
-			return 0;
-		}
+		uint8_t readByteReg(uint8_t reg);
 		
-		uint16_t readWordReg(uint8_t reg) {
-			uint16_t value;
-			if (readReg(reg, &value, sizeof(value))) {
-				return value;
-			}
-			return 0;
-		}
+		uint16_t readWordReg(uint8_t reg);
 		
 };
 
