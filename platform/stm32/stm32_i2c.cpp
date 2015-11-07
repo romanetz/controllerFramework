@@ -23,7 +23,11 @@ void STM32I2CDriver::reset() {
 	_i2c->CR1 = 0;
 	_i2c->CR2 = clock / 1000000;
 	_i2c->TRISE = clock / 1000000 + 1;
-	_i2c->CCR = clock / (2 * _baudrate);
+	if (_baudrate <= 100000) { // Standard Mode
+		_i2c->CCR = clock / (2 * _baudrate);
+	} else { // Fast Mode
+		_i2c->CCR = I2C1_CCR_F_S | (clock / (3 * _baudrate));
+	}
 	_i2c->CR1 |= I2C1_CR1_PE;
 }
 
