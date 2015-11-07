@@ -7,25 +7,36 @@ CC = $(TARGET)gcc
 LD = $(TARGET)gcc
 SIZE = $(TARGET)size
 OBJCOPY = $(TARGET)objcopy
+Q ?= @
 
 SOURCES += $(wildcard $(BASE_DIR)/platform/*.cpp)
-HEADERS += $(wildcard $(BASE_DIR)/platform/*.h)
+HEADERS += $(BUILD_DIR)/platform.h
 INCLUDE_PATH += $(BASE_DIR)/platform
 
 CFLAGS += -fno-exceptions -fno-rtti
 CFLAGS += $(foreach PATH, $(INCLUDE_PATH), -I$(PATH))
 
-OBJECTS += $(addprefix $(BUILD_DIR)/, $(notdir $(SOURCES:.cpp=.o)))
+OBJECTS += $(addprefix $(BUILD_DIR)/obj/, $(notdir $(SOURCES:.cpp=.o)))
 
 VPATH = $(sort $(dir $(SOURCES)))
+
+SOURCES += $(wildcard $(BASE_DIR)/libraries/*/*.cpp)
+INCLUDE_PATH += $(wildcard $(BASE_DIR)/libraries/*)
 
 include $(PLATFORM_DIR)/rules.mk
 
 $(BUILD_DIR):
-	mkdir -p $(BUILD_DIR)
+	@echo "Creating $(BUILD_DIR) directory..."
+	$(Q)mkdir -p $(BUILD_DIR)/obj
 
-$(OBJECTS) : $(BUILD_DIR)/%.o : %.cpp $(HEADERS)
-	$(CC) -c $(CFLAGS) -o $@ $<
+$(BUILD_DIR)/platform.h:
+	@echo "Creating $*.h..."
+	$(Q)echo -e "#ifndef __PLATFORM_H__\n#define __PLATFORM_H__\n\n#include <$(PLATFORM_NAME).h>\n\n#endif\n" > $@
+
+$(OBJECTS) : $(BUILD_DIR)/obj/%.o : %.cpp $(HEADERS)
+	@echo "Compiling $*.cpp..."
+	$(Q)$(CC) -c $(CFLAGS) -o $@ $<
+	$(Q)$(CC) -MM $(CFLAGS) $< | sed "s/$*\.o/$(shell echo $@ | sed -e 's/[\/&]/\\&/g')/" > $(BUILD_DIR)/obj/$*.d
 
 clean:
 	rm -rfv $(BUILD_DIR)
@@ -34,3 +45,4 @@ clean:
 
 .SECONDARY:
 
+-include $(BUILD_DIR)/obj/*.d

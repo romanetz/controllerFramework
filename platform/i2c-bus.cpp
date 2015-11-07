@@ -14,3 +14,4 @@ int I2CBus::masterTxRx(uint32_t slaveAddress, const void *txBuffer, unsigned int
 	transaction.messages = messages;
 	return masterTransaction(&transaction, timeout);
 }
+
