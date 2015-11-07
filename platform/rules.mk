@@ -29,11 +29,11 @@ $(BUILD_DIR):
 	@echo "Creating $(BUILD_DIR) directory..."
 	$(Q)mkdir -p $(BUILD_DIR)/obj
 
-$(BUILD_DIR)/platform.h:
+$(BUILD_DIR)/platform.h: Makefile
 	@echo "Creating $*.h..."
 	$(Q)echo -e "#ifndef __PLATFORM_H__\n#define __PLATFORM_H__\n\n#include <$(PLATFORM_NAME).h>\n\n#endif\n" > $@
 
-$(OBJECTS) : $(BUILD_DIR)/obj/%.o : %.cpp $(HEADERS)
+$(OBJECTS) : $(BUILD_DIR)/obj/%.o : %.cpp $(HEADERS) Makefile
 	@echo "Compiling $*.cpp..."
 	$(Q)$(CC) -c $(CFLAGS) -o $@ $<
 	$(Q)$(CC) -MM $(CFLAGS) $< | sed "s/$*\.o/$(shell echo $@ | sed -e 's/[\/&]/\\&/g')/" > $(BUILD_DIR)/obj/$*.d

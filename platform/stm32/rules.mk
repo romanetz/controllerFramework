@@ -16,11 +16,11 @@ OUTPUT_FILES = $(BUILD_DIR)/$(PROJECT_NAME).elf $(BUILD_DIR)/$(PROJECT_NAME).bin
 all: $(BUILD_DIR) $(OUTPUT_FILES)
 	$(Q)$(SIZE) $(BUILD_DIR)/$(PROJECT_NAME).elf
 
-$(BUILD_DIR)/stm32defs.h:
+$(BUILD_DIR)/stm32defs.h: Makefile
 	@echo "Creating $(notdir $@)..."
 	$(Q)$(BASE_DIR)/tools/svd2header `$(BASE_DIR)/tools/svd-from-mcu $(MCU)` $@
 
-$(BUILD_DIR)/script.ld: $(PLATFORM_DIR)/script.ld.S
+$(BUILD_DIR)/script.ld: $(PLATFORM_DIR)/script.ld.S Makefile
 	@echo "Creating $(notdir $@)..."
 	$(Q)$(CC) -P -E $(MCU_INFO) $(PLATFORM_DIR)/script.ld.S > $@
 
