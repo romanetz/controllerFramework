@@ -10,16 +10,30 @@ class MS5611 {
 		
 		uint8_t _addr;
 		
+		uint8_t _lastConvertCommand;
+		
+		uint32_t _rawTemperature;
+		
+		uint32_t _rawPressure;
+		
+		int32_t _dT;
+		
 		int16_t _temperature;
 		
 		uint32_t _pressure;
 		
 		uint16_t _prom[8];
+		
+		MS5611OSR _osr;
 	
 	public:
-		MS5611(I2CBus& i2c, uint8_t addr);
+		MS5611(I2CBus& i2c, uint8_t addr, MS5611OSR osr = MS5611_OSR_4096);
+		
+		void setOSR(MS5611OSR osr) { _osr = osr; }
 		
 		bool detect();
+		
+		bool setup();
 		
 		bool sendCommand(uint8_t command, void *response = 0, unsigned int responseSize = 0);
 		
@@ -31,7 +45,11 @@ class MS5611 {
 		
 		bool reset();
 		
-		bool updateData();
+		bool updateData(bool convert = true);
+		
+		uint32_t rawTemperature() { return _rawTemperature; }
+		
+		uint32_t rawPressure() { return _rawPressure; }
 		
 		int16_t temperature() { return _temperature; }
 		

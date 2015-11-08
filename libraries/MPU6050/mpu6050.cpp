@@ -7,9 +7,7 @@ struct MPU6050DataRegs {
 } __attribute__((packed));
 
 MPU6050::MPU6050(I2CBus& i2c, uint8_t addr) : SimpleI2CDevice(i2c, addr) {
-	/* if (detect()) {
-		powerOn();
-	} */
+	//Do nothing
 }
 
 bool MPU6050::detect() {
@@ -17,6 +15,14 @@ bool MPU6050::detect() {
 		return true;
 	}
 	return false;
+}
+
+bool MPU6050::setup(MPU6050AccelScale accelScale, MPU6050GyroScale gyroScale, bool i2cByPass) {
+	if (!powerOn()) return false;
+	if (!setAccelScale(accelScale)) return false;
+	if (!setGyroScale(gyroScale)) return false;
+	if (!enableI2CByPass(i2cByPass)) return false;
+	return true;
 }
 
 bool MPU6050::powerOn() {

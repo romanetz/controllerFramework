@@ -8,13 +8,22 @@ struct HMC5883DataRegs {
 } __attribute__((packed));
 
 HMC5883::HMC5883(I2CBus& i2c, uint8_t addr) : SimpleI2CDevice(i2c, addr) {
-	// Do nothing
+	scale = 1.0f;
 }
 		
 bool HMC5883::detect() {
 	char idString[3];
 	if (!readReg(HMC5883_ID_A, idString, sizeof(idString))) return false;
 	return strncmp(idString, "H43", 3) == 0;
+}
+
+bool HMC5883::setup(HMC5883Mode mode, HMC5883DataRate rate, HMC5883Gain gain, HMC5883MeasurementMode msMode) {
+	if (!writeByteReg(HMC5883_MODE, HMC5883_MODE_IDLE)) return false;
+	if (!writeByteReg(HMC5883_CONFIG_A, rate | msMode)) return false;
+	//if (!writeByteReg(HMC5883_CONFIG_B, gain)) return false;
+	if (!setGain(gain)) return false;
+	if (!writeByteReg(HMC5883_MODE, mode)) return false;
+	return true;
 }
 
 bool HMC5883::setMeasurementMode(HMC5883MeasurementMode mode) {
@@ -32,7 +41,34 @@ bool HMC5883::setDataRate(HMC5883DataRate rate) {
 }
 
 bool HMC5883::setGain(HMC5883Gain gain) {
-	return writeByteReg(HMC5883_CONFIG_B, gain);
+	if (!writeByteReg(HMC5883_CONFIG_B, gain)) return false;
+	switch (gain) {
+		case HMC5883_GAIN_0_9GA:
+			scale = 1.0f / 1280.0f;
+			break;
+		case HMC5883_GAIN_1_2GA:
+			scale = 1.0f / 1024.0f;
+			break;
+		case HMC5883_GAIN_1_9GA:
+			scale = 1.0f / 768.0f;
+			break;
+		case HMC5883_GAIN_2_5GA:
+			scale = 1.0f / 614.0f;
+			break;
+		case HMC5883_GAIN_4GA:
+			scale = 1.0f / 415.0f;
+			break;
+		case HMC5883_GAIN_4_6GA:
+			scale = 1.0f / 361.0f;
+			break;
+		case HMC5883_GAIN_5_5GA:
+			scale = 1.0f / 307.0f;
+			break;
+		case HMC5883_GAIN_7_9GA:
+			scale = 1.0f / 219.0f;
+			break;
+	}
+	return true;
 }
 
 bool HMC5883::setMode(HMC5883Mode mode) {
@@ -52,4 +88,4 @@ bool HMC5883::updateData() {
 	_rawValueZ = data.z;
 	return true;
 }
-		
+

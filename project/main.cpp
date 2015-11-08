@@ -30,29 +30,38 @@ int main(void) {
 	led1.clear();
 	led2.clear();
 	usleep(1000000);
+	bool mpu6050error = true, hmc5883error = true, ms5611error = true;
 	while (1) {
 		led1.toggle();
 		usleep(500000);
 		led2.toggle();
-		usart1.printf("BUTTON1=%i BUTTON2=%i ", button1.read(), button2.read());
-		if (mpu6050.detect()) {
-			mpu6050.powerOn();
-			mpu6050.enableI2CByPass(true);
-			mpu6050.updateData();
-			usart1.printf("AX=%6i,AY=%6i,AZ=%6i,GX=%6i,GY=%6i,GZ=%6i,T=%6i ", mpu6050.rawAccelX(), mpu6050.rawAccelY(), mpu6050.rawAccelZ(),
-				mpu6050.rawGyroX(), mpu6050.rawGyroY(), mpu6050.rawGyroZ(), mpu6050.temperature());
+		usart1.printf("BUTTON1=%i BUTTON2=%i\r\n", button1.read(), button2.read());
+		if (mpu6050error && mpu6050.detect()) {
+			mpu6050error = !mpu6050.setup();
+		} else if (!mpu6050error) {
+			mpu6050error = !mpu6050.updateData();
 		}
-		if (hmc5883.detect()) {
-			hmc5883.setDataRate(HMC5883_DATARATE_75HZ);
-			hmc5883.setMode(HMC5883_MODE_CONTINUOS);
-			hmc5883.updateData();
-			usart1.printf("MX=%6i,MY=%6i,MZ=%6i ", hmc5883.rawValueX(), hmc5883.rawValueY(), hmc5883.rawValueZ());
+		if (!mpu6050error) {
+			usart1.printf("MPU6050: AX=%2.3f,AY=%2.3f,AZ=%2.3f,GX=%2.3f,GY=%3.0f,GZ=%3.0f,T=%3.0f\r\n",
+				mpu6050.accelX(), mpu6050.accelY(), mpu6050.accelZ(),
+				mpu6050.gyroX(), mpu6050.gyroY(), mpu6050.gyroZ(), mpu6050.temperature());
 		}
-		if (ms5611.detect()) {
-			//ms5611.reset();
-			usart1.printf("MS5611");
+		if (hmc5883error && hmc5883.detect()) {
+			hmc5883error = !hmc5883.setup();
+		} else if (!hmc5883error) {
+			hmc5883error = !hmc5883.updateData();
 		}
-		usart1.write("\r\n");
+		if (!hmc5883error) {
+			usart1.printf("HMC5883: MX=%2.3f,MY=%2.3f,MZ=%2.3f\r\n", hmc5883.valueX(), hmc5883.valueY(), hmc5883.valueZ());
+		}
+		if (ms5611error && ms5611.detect()) {
+			ms5611error = !ms5611.setup();
+		} else if (!ms5611error) {
+			ms5611error = !ms5611.updateData();
+		}
+		if (!ms5611error) {
+			usart1.printf("MS5611: P=%u,T=%i\r\n", ms5611.pressure(), ms5611.temperature());
+		}
 	}
 	return 0;
 }

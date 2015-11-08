@@ -35,6 +35,8 @@ class MPU6050: public SimpleI2CDevice {
 		
 		bool detect();
 		
+		bool setup(MPU6050AccelScale accelScale = MPU6050_ACCELSCALE_2G, MPU6050GyroScale gyroScale = MPU6050_GYROSCALE_250DEG, bool i2cByPass = true);
+		
 		bool powerOn();
 		
 		bool powerOff();
