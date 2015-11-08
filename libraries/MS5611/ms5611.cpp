@@ -45,17 +45,37 @@ uint16_t MS5611::readPROM(uint8_t addr) {
 	return ((value & 0xFF) << 8) | ((value & 0xFF00) >> 8);
 }
 
-bool MS5611::loadPROM() {
+bool MS5611::loadPROM(bool check) {
 	for (int i = 0; i < 8; i++) {
 		_prom[i] = readPROM(i);
 	}
-	return true;
+	return !check || checkPROM();
 }
 
-bool MS5611::reset() {
+bool MS5611::checkPROM() {
+	uint16_t savedCrc = _prom[7];
+	_prom[7] &= ~0xFF;
+	uint16_t r = 0;
+	for (unsigned int i = 0; i < sizeof(_prom); i++) {
+		uint8_t byte = ((i % 2) == 1) ? (_prom[i / 2] & 0xFF) : (_prom[i / 2] >> 8);
+		r ^= byte;
+		for (int j = 8; j > 0; j--) {
+			if (r & 0x8000) {
+				r = (r << 1) ^ 0x3000;
+			} else {
+				r = r << 1;
+			}
+		}
+	}
+	r = (r >> 12) & 0x000F;
+	_prom[7] = savedCrc;
+	return (savedCrc & 0x000F) == r;
+}
+
+bool MS5611::reset(bool reloadPROM) {
 	if (!sendCommand(MS5611_CMD_RESET)) return false;
 	usleep(3000);
-	return loadPROM();
+	return !reloadPROM || loadPROM(true);
 }
 		
 bool MS5611::updateData(bool convert) {

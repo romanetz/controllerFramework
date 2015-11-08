@@ -41,9 +41,11 @@ class MS5611 {
 		
 		uint16_t readPROM(uint8_t addr);
 		
-		bool loadPROM();
+		bool loadPROM(bool check = true);
 		
-		bool reset();
+		bool checkPROM();
+		
+		bool reset(bool reloadPROM = true);
 		
 		bool updateData(bool convert = true);
 		
