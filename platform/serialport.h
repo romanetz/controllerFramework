@@ -22,6 +22,8 @@ enum SerialPortParity {
 	\brief Number of data bits for serial interface.
 */
 enum SerialPortDataBits {
+	SERIALPORT_DATA_5BIT = 5, ///< 5 bit
+	SERIALPORT_DATA_6BIT = 6, ///< 6 bit
 	SERIALPORT_DATA_7BIT = 7, ///< 7 bit
 	SERIALPORT_DATA_8BIT = 8, ///< 8 bit
 	SERIALPORT_DATA_9BIT = 9 ///< 9 bit

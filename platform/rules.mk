@@ -11,7 +11,7 @@ Q ?= @
 
 SOURCES += $(wildcard $(BASE_DIR)/platform/*.cpp)
 HEADERS += $(BUILD_DIR)/platform.h
-INCLUDE_PATH += $(BASE_DIR)/platform
+INCLUDE_PATH += $(BASE_DIR)/platform $(BUILD_DIR)
 
 CFLAGS += -fno-exceptions -fno-rtti
 CFLAGS += $(foreach PATH, $(INCLUDE_PATH), -I$(PATH))

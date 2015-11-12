@@ -75,6 +75,11 @@ class IOChannel {
 		*/
 		int printf(const char *fmt, ...);
 		
+		/**
+			\brief Flush I/O buffers.
+		*/
+		virtual void flush() {};
+		
 };
 
 #endif
