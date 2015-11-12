@@ -21,7 +21,7 @@ uint64_t OneWireBus::findFirst(OneWireBusSearchState& state, bool alarm) {
 
 uint64_t OneWireBus::findNext(OneWireBusSearchState& state) {
 	if (state.done) return -1;
-	reset();
+	if (!reset()) return -1;
 	writeByte(state.alarm ? 0xEC : 0xF0);
 	uint64_t addr = 0;
 	bool nextBit;
