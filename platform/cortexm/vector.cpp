@@ -1,3 +1,4 @@
+#define CORTEXM_PRIVATE
 #include <platform.h>
 #include <cortexm.h>
 
@@ -83,6 +84,7 @@ __attribute__ ((section(".vectors"))) funcptr_t vector_table[] = {
 	debug_monitor_handler, // Debug Monitor
 	0,
 	pend_sv_handler, // Pend SV
-	SysTick::interruptHandler // SysTick
-	/* TODO: Vendor-specific IRQs */
+	SysTick::interruptHandler, // SysTick
+	/* Vendor-specific IRQs */
+	PERIPHERAL_IRQS
 };

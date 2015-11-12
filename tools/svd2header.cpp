@@ -164,7 +164,7 @@ int convertSvdToHeader(TiXmlDocument *xmlDoc, FILE *output) {
 			fprintf(output, "\n");
 			for (std::vector<InterruptInfo>::iterator intIt = it->second.interrupts.begin(); intIt != it->second.interrupts.end(); ++intIt) {
 				int value = atoi(intIt->value);
-				fprintf(output, "#define %s_interrupt %i /* %s */\n", intIt->name, value, intIt->desc);
+				fprintf(output, "#define %s_IRQ %i /* %s */\n", intIt->name, value, intIt->desc);
 			}
 		}
 		fprintf(output, "\n");
@@ -185,6 +185,35 @@ int convertSvdToHeader(TiXmlDocument *xmlDoc, FILE *output) {
 			fprintf(output, "\n");
 		}
 	}
+	std::map<int, const char*> vectors;
+	int maxIntIndex = -1;
+	for (std::map<std::string, PeriphInfo>::iterator it = periph.begin(); it != periph.end(); ++it) {
+		for (std::vector<InterruptInfo>::iterator intIt = it->second.interrupts.begin(); intIt != it->second.interrupts.end(); ++intIt) {
+			int value = atoi(intIt->value);
+			vectors[value] = intIt->name;
+			if (value > maxIntIndex) {
+				maxIntIndex = value;
+			}
+		}
+	}
+	fprintf(output, "#ifdef CORTEXM_PRIVATE\n\n");
+	for (int i = 0; i < maxIntIndex; i++) {
+		std::map<int, const char*>::iterator it = vectors.find(i);
+		if (it != vectors.end()) {
+			fprintf(output, "ISR(%s_isr);\n#pragma weak %s_isr = empty_handler\n\n", it->second, it->second);
+		}
+	}
+	fprintf(output, "#define PERIPHERAL_IRQS \\\n");
+	for (int i = 0; i < maxIntIndex; i++) {
+		std::map<int, const char*>::iterator it = vectors.find(i);
+		if (it != vectors.end()) {
+			fprintf(output, "\t%s_isr, \\\n", it->second);
+		} else {
+			fprintf(output, "\tempty_handler, \\\n");
+		}
+	}
+	fprintf(output, "\t0\n\n");
+	fprintf(output, "#endif\n");
 	return 0;
 }
 
