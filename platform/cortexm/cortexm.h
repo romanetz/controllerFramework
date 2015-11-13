@@ -18,6 +18,8 @@
 #include <vector.h>
 #include <scb.h>
 #include <systick.h>
+#include <nvic.h>
+#include <vector.h>
 #include <cortexm_misc.h>
 
 #endif

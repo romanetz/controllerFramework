@@ -6,7 +6,9 @@
 #define __CORTEXM_MISC_H__
 
 // NVIC: Nested Vector Interrupt Controller
-//#define NVIC_BASE (SCS_BASE + 0x0100)
+#ifndef NVIC_BASE
+#define NVIC_BASE (SCS_BASE + 0x0100)
+#endif
 
 // MPU: Memory protection unit
 #define MPU_BASE (SCS_BASE + 0x0D90)

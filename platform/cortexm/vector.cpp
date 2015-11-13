@@ -1,4 +1,5 @@
 #define CORTEXM_PRIVATE
+#include <vector.h>
 #include <platform.h>
 #include <cortexm.h>
 
