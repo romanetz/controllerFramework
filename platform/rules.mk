@@ -9,9 +9,9 @@ SIZE = $(TARGET)size
 OBJCOPY = $(TARGET)objcopy
 Q ?= @
 
-SOURCES += $(wildcard $(BASE_DIR)/platform/*.cpp)
+SOURCES += $(wildcard $(BASE_DIR)/platform/common/*.cpp)
 HEADERS += $(BUILD_DIR)/platform.h
-INCLUDE_PATH += $(BASE_DIR)/platform $(BUILD_DIR)
+INCLUDE_PATH += $(BASE_DIR)/platform/common $(BUILD_DIR)
 
 CFLAGS += -fno-exceptions -fno-rtti
 CFLAGS += $(foreach PATH, $(INCLUDE_PATH), -I$(PATH))

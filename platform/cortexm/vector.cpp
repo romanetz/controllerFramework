@@ -68,9 +68,6 @@ ISR(debug_monitor_handler);
 #pragma weak pend_sv_handler = empty_handler
 ISR(pend_sv_handler);
 
-#pragma weak systick_handler = empty_handler
-ISR(systick_handler);
-
 __attribute__ ((section(".vectors"))) funcptr_t vector_table[] = {
 	(funcptr_t)&_stack,
 	reset_handler,
