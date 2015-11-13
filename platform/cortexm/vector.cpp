@@ -14,7 +14,7 @@ extern funcptr_t __fini_array_start, __fini_array_end;
 int main(void);
 void platform_init(void);
 
-extern "C" void __attribute__((naked)) reset_handler(void) {
+extern "C" void __attribute__((naked)) RESET_vect(void) {
 	unsigned *dst = &_data;
 	unsigned *src = &_data_loadaddr;
 	while (dst < &_edata) {
@@ -45,43 +45,43 @@ ISR(blocking_handler) {
 	while (1);
 }
 
-#pragma weak nmi_handler = empty_handler
-ISR(nmi_handler);
+#pragma weak NMI_vect = empty_handler
+ISR(NMI_vect);
 
-#pragma weak hard_fault_handler = blocking_handler
-ISR(hard_fault_handler);
+#pragma weak HARD_FAULT_vect = blocking_handler
+ISR(HARD_FAULT_vect);
 
-#pragma weak memory_manager_fault_handler = blocking_handler
-ISR(memory_manager_fault_handler);
+#pragma weak MEM_MANAGE_FAULT_vect = blocking_handler
+ISR(MEM_MANAGE_FAULT_vect);
 
-#pragma weak bus_fault_handler = blocking_handler
-ISR(bus_fault_handler);
+#pragma weak BUS_FAULT_vect = blocking_handler
+ISR(BUS_FAULT_vect);
 
-#pragma weak usage_fault_handler = blocking_handler
-ISR(usage_fault_handler);
+#pragma weak USAGE_FAULT_vect = blocking_handler
+ISR(USAGE_FAULT_vect);
 
-#pragma weak sv_call_handler = empty_handler
-ISR(sv_call_handler);
+#pragma weak SV_CALL_vect = empty_handler
+ISR(SV_CALL_vect);
 
-#pragma weak debug_monitor_handler = empty_handler
-ISR(debug_monitor_handler);
+#pragma weak DEBUG_MONITOR_vect = empty_handler
+ISR(DEBUG_MONITOR_vect);
 
-#pragma weak pend_sv_handler = empty_handler
-ISR(pend_sv_handler);
+#pragma weak PEND_SV_vect = empty_handler
+ISR(PEND_SV_vect);
 
 __attribute__ ((section(".vectors"))) funcptr_t vector_table[] = {
 	(funcptr_t)&_stack,
-	reset_handler,
-	nmi_handler, // NMI
-	hard_fault_handler, // Hard Fault
-	memory_manager_fault_handler, // Memory Manager Fault
-	bus_fault_handler, // Bus Fault
-	usage_fault_handler, // Usage Fault
+	RESET_vect,
+	NMI_vect, // NMI
+	HARD_FAULT_vect, // Hard Fault
+	MEM_MANAGE_FAULT_vect, // Memory Manager Fault
+	BUS_FAULT_vect, // Bus Fault
+	USAGE_FAULT_vect, // Usage Fault
 	0, 0, 0, 0,
-	sv_call_handler, // SV Call
-	debug_monitor_handler, // Debug Monitor
+	SV_CALL_vect, // SV Call
+	DEBUG_MONITOR_vect, // Debug Monitor
 	0,
-	pend_sv_handler, // Pend SV
+	PEND_SV_vect, // Pend SV
 	SysTick::interruptHandler, // SysTick
 	/* Vendor-specific IRQs */
 	PERIPHERAL_IRQS

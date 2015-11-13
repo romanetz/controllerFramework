@@ -8,7 +8,7 @@ MEMORY {
 
 EXTERN(vector_table)
 
-ENTRY(reset_handler)
+ENTRY(RESET_vect)
 
 SECTIONS {
 	.text : {

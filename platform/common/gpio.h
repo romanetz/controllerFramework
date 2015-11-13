@@ -58,6 +58,11 @@ enum GPIOBitValue {
 };
 
 /**
+	\brief Interrupt handler for GPIO.
+*/
+typedef void (*GPIOInterruptHandler)(void *arg);
+
+/**
 	\brief Abstract class for GPIO port (many GPIO pads).
 */
 class GPIOPort {
@@ -154,6 +159,12 @@ class GPIOPort {
 			return (readBits(1 << pad) == 0) ? GPIO_PAD_LOW : GPIO_PAD_HIGH;
 		}
 		
+		/**
+			\brief Attach interrupt handler to GPIO bit
+		*/
+		virtual bool attachInterrupt(GPIOBitIndex pad, GPIOInterruptHandler handler) {
+			return false;
+		}
 };
 
 /**
@@ -196,6 +207,13 @@ class GPIOPad {
 				set();
 			}
 		}
+		
+		/**
+			\brief Attach interrupt to GPIO pad.
+		*/
+		virtual bool attachInterrupt(GPIOInterruptHandler handler) {
+			return false;
+		}
 };
 
 /**
@@ -232,6 +250,10 @@ class GPIOBit : public GPIOPad {
 		
 		GPIOBitValue read() {
 			return _port.readBit(_bit);
+		}
+		
+		bool attachInterrupt(GPIOInterruptHandler handler) {
+			return _port.attachInterrupt(_bit, handler);
 		}
 		
 };

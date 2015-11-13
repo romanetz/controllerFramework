@@ -200,14 +200,14 @@ int convertSvdToHeader(TiXmlDocument *xmlDoc, FILE *output) {
 	for (int i = 0; i < maxIntIndex; i++) {
 		std::map<int, const char*>::iterator it = vectors.find(i);
 		if (it != vectors.end()) {
-			fprintf(output, "ISR(%s_isr);\n#pragma weak %s_isr = empty_handler\n\n", it->second, it->second);
+			fprintf(output, "ISR(%s_vect);\n#pragma weak %s_vect = empty_handler\n\n", it->second, it->second);
 		}
 	}
 	fprintf(output, "#define PERIPHERAL_IRQS \\\n");
 	for (int i = 0; i < maxIntIndex; i++) {
 		std::map<int, const char*>::iterator it = vectors.find(i);
 		if (it != vectors.end()) {
-			fprintf(output, "\t%s_isr, \\\n", it->second);
+			fprintf(output, "\t%s_vect, \\\n", it->second);
 		} else {
 			fprintf(output, "\tempty_handler, \\\n");
 		}
