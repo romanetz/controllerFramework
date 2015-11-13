@@ -36,6 +36,26 @@ struct STM32GPIORegs {
 #endif
 };
 
+struct STM32AFIORegs {
+	uint32_t EVCR;
+	uint32_t MAPR;
+	uint32_t EXTICR[4];
+	uint32_t MAPR2;
+};
+
+struct STM32EXTIRegs {
+	uint32_t IMR;
+	uint32_t EMR;
+	uint32_t RTSR;
+	uint32_t FTSR;
+	uint32_t SWIER;
+	uint32_t PR;
+};
+
+#define AFIO MMIO(AFIO_BASE, STM32AFIORegs)
+
+#define EXTI MMIO(EXTI_BASE, STM32EXTIRegs)
+
 #ifdef STM32F1
 
 #define STM32_GPIO_MODE_INPUT 0x00
@@ -211,6 +231,8 @@ class STM32GPIOPort : public GPIOPort {
 			return _gpio;
 		}
 		
+		bool attachInterrupt(GPIOBitIndex bit, GPIOInterruptMode mode, GPIOInterruptHandler handler, void *arg);
+		
 };
 
 /**
@@ -279,6 +301,8 @@ class STM32GPIOPad : public GPIOPad {
 		GPIOBitValue read() {
 			return ((_gpio->IDR & (1 << _bit)) == 0) ? GPIO_PAD_LOW : GPIO_PAD_HIGH;
 		}
+		
+		bool attachInterrupt(GPIOInterruptMode mode, GPIOInterruptHandler handler, void *arg);
 		
 };
 

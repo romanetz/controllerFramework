@@ -57,6 +57,13 @@ enum GPIOBitValue {
 	GPIO_PAD_HIGH = true
 };
 
+enum GPIOInterruptMode {
+	GPIO_INTERRUPT_NONE = 0,
+	GPIO_INTERRUPT_RISING = 1 << 0,
+	GPIO_INTERRUPT_FALLING = 1 << 1,
+	GPIO_INTERRUPT_CHANGE = GPIO_INTERRUPT_RISING | GPIO_INTERRUPT_FALLING
+};
+
 /**
 	\brief Interrupt handler for GPIO.
 */
@@ -162,7 +169,7 @@ class GPIOPort {
 		/**
 			\brief Attach interrupt handler to GPIO bit
 		*/
-		virtual bool attachInterrupt(GPIOBitIndex pad, GPIOInterruptHandler handler) {
+		virtual bool attachInterrupt(GPIOBitIndex pad, GPIOInterruptMode mode, GPIOInterruptHandler handler, void *arg) {
 			return false;
 		}
 };
@@ -211,7 +218,7 @@ class GPIOPad {
 		/**
 			\brief Attach interrupt to GPIO pad.
 		*/
-		virtual bool attachInterrupt(GPIOInterruptHandler handler) {
+		virtual bool attachInterrupt(GPIOInterruptMode mode, GPIOInterruptHandler handler, void *arg) {
 			return false;
 		}
 };
@@ -252,8 +259,8 @@ class GPIOBit : public GPIOPad {
 			return _port.readBit(_bit);
 		}
 		
-		bool attachInterrupt(GPIOInterruptHandler handler) {
-			return _port.attachInterrupt(_bit, handler);
+		bool attachInterrupt(GPIOInterruptMode mode, GPIOInterruptHandler handler, void *arg) {
+			return _port.attachInterrupt(_bit, mode, handler, arg);
 		}
 		
 };

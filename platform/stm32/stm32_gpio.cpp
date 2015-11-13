@@ -1,5 +1,12 @@
 #include <stm32.h>
 
+struct GPIOInterruptHandlerInfo {
+	GPIOInterruptHandler func;
+	void *arg;
+};
+
+static GPIOInterruptHandlerInfo gpioInterruptHandlers[16];
+
 STM32GPIOPort::STM32GPIOPort(volatile STM32GPIORegs *gpio) : _gpio(gpio) {
 	STM32RCC::periphClockEnable(_gpio);
 }
@@ -149,3 +156,148 @@ void STM32GPIOPad::setup(GPIOBitMode mode, GPIOBitDriver driver, GPIOPuPdMode pu
 }
 
 #endif
+
+static int gpioPortIndex(volatile STM32GPIORegs *gpio) {
+	switch ((uint32_t)gpio) {
+		case GPIOA_BASE:
+			return 0;
+		case GPIOB_BASE:
+			return 1;
+		case GPIOC_BASE:
+			return 2;
+		case GPIOD_BASE:
+			return 3;
+#ifdef GPIOE
+		case GPIOE_BASE:
+			return 4;
+#endif
+#ifdef GPIOF
+		case GPIOF_BASE:
+			return 5;
+#endif
+#ifdef GPIOG
+		case GPIOG_BASE:
+			return 6;
+#endif
+#ifdef GPIOH
+		case GPIOH_BASE:
+			return 7;
+#endif
+#ifdef GPIOI
+		case GPIOI_BASE:
+			return 8;
+#endif
+		default:
+			return -1;
+	}
+}
+
+static bool gpioAttachInterrupt(volatile STM32GPIORegs *gpio, GPIOBitIndex bit, GPIOInterruptMode mode, GPIOInterruptHandler handler, void *arg) {
+	int portIndex = gpioPortIndex(gpio);
+	if ((portIndex >= 0) && (bit < 16)) {
+		STM32RCC::periphClockEnable(AFIO);
+		EXTI->IMR &= ~(1 << bit);
+		gpioInterruptHandlers[bit].func = handler;
+		gpioInterruptHandlers[bit].arg = arg;
+		AFIO->EXTICR[bit / 4] &= ~(0xF << ((bit % 4) * 4));
+		AFIO->EXTICR[bit / 4] |= portIndex << ((bit % 4) * 4);
+		if (mode & GPIO_INTERRUPT_RISING) {
+			EXTI->RTSR |= 1 << bit;
+		} else {
+			EXTI->RTSR &= ~(1 << bit);
+		}
+		if (mode & GPIO_INTERRUPT_FALLING) {
+			EXTI->FTSR |= 1 << bit;
+		} else {
+			EXTI->FTSR &= ~(1 << bit);
+		}
+		EXTI->IMR |= 1 << bit;
+		uint8_t irq;
+		switch (bit) {
+			case 0:
+				irq = EXTI0_IRQ;
+				break;
+			case 1:
+				irq = EXTI1_IRQ;
+				break;
+			case 2:
+				irq = EXTI2_IRQ;
+				break;
+			case 3:
+				irq = EXTI3_IRQ;
+				break;
+			case 4:
+				irq = EXTI4_IRQ;
+				break;
+			case 5:
+			case 6:
+			case 7:
+			case 8:
+			case 9:
+				irq = EXTI9_5_IRQ;
+				break;
+			case 10:
+			case 11:
+			case 12:
+			case 13:
+			case 14:
+			case 15:
+				irq = EXTI15_10_IRQ;
+				break;
+		}
+		NVIC::enableIRQ(irq);
+		return true;
+	}
+	return false;
+}
+
+bool STM32GPIOPort::attachInterrupt(GPIOBitIndex bit, GPIOInterruptMode mode, GPIOInterruptHandler handler, void *arg) {
+	return gpioAttachInterrupt(_gpio, bit, mode, handler, arg);
+}
+
+bool STM32GPIOPad::attachInterrupt(GPIOInterruptMode mode, GPIOInterruptHandler handler, void *arg) {
+	return gpioAttachInterrupt(_gpio, _bit, mode, handler, arg);
+}
+
+inline void handleGPIOInterrupt(int index) {
+	if (gpioInterruptHandlers[index].func) {
+		gpioInterruptHandlers[index].func(gpioInterruptHandlers[index].arg);
+	}
+	EXTI->PR |= 1 << index;
+}
+
+ISR(EXTI0_vect) {
+	handleGPIOInterrupt(0);
+}
+
+ISR(EXTI1_vect) {
+	handleGPIOInterrupt(1);
+}
+
+ISR(EXTI2_vect) {
+	handleGPIOInterrupt(2);
+}
+
+ISR(EXTI3_vect) {
+	handleGPIOInterrupt(3);
+}
+
+ISR(EXTI4_vect) {
+	handleGPIOInterrupt(4);
+}
+
+ISR(EXTI9_5_vect) {
+	for (int i = 5; i <= 9; i++) {
+		if (EXTI->PR & (1 << i)) {
+			handleGPIOInterrupt(i);
+		}
+	}
+}
+
+ISR(EXTI15_10_vect) {
+	for (int i = 10; i <= 15; i++) {
+		if (EXTI->PR & (1 << i)) {
+			handleGPIOInterrupt(i);
+		}
+	}
+}

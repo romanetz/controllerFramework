@@ -60,6 +60,7 @@ static const PeriphInfo periphTable[] = {
 #ifdef I2C3
 	{I2C3, &RCC->APB1ENR, RCC_APB1ENR_I2C3EN},
 #endif
+	{AFIO, &RCC->APB2ENR, RCC_APB2ENR_AFIOEN},
 	{}
 };
 

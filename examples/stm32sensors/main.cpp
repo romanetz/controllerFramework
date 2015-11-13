@@ -26,16 +26,30 @@ MPU6050 mpu6050(i2c1, MPU6050_DEFAULT_ADDRESS);
 HMC5883 hmc5883(i2c1, HMC5883_I2C_ADDRESS);
 MS5611 ms5611(i2c1, MS5611_DEFAULT_ADDRESS);
 
+volatile int counter;
+
+void incCounter(void *arg) {
+	(void)arg;
+	counter++;
+}
+
+void decCounter(void *arg) {
+	(void)arg;
+	counter--;
+}
+
 int main(void) {
 	led1.clear();
 	led2.clear();
 	usleep(1000000);
 	bool mpu6050error = true, hmc5883error = true, ms5611error = true;
+	button1.attachInterrupt(GPIO_INTERRUPT_FALLING, incCounter, NULL);
+	button2.attachInterrupt(GPIO_INTERRUPT_FALLING, decCounter, NULL);
 	while (1) {
 		led1.toggle();
 		usleep(500000);
 		led2.toggle();
-		usart1.printf("BUTTON1=%i BUTTON2=%i\r\n", button1.read(), button2.read());
+		usart1.printf("BUTTON1=%i BUTTON2=%i COUNTER=%i\r\n", button1.read(), button2.read(), counter);
 		if (mpu6050error && mpu6050.detect()) {
 			mpu6050error = !mpu6050.setup();
 		} else if (!mpu6050error) {
