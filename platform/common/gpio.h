@@ -57,11 +57,14 @@ enum GPIOBitValue {
 	GPIO_PAD_HIGH = true
 };
 
+/**
+	\brief Triggers for GPIO interrupt.
+*/
 enum GPIOInterruptMode {
-	GPIO_INTERRUPT_NONE = 0,
-	GPIO_INTERRUPT_RISING = 1 << 0,
-	GPIO_INTERRUPT_FALLING = 1 << 1,
-	GPIO_INTERRUPT_CHANGE = GPIO_INTERRUPT_RISING | GPIO_INTERRUPT_FALLING
+	GPIO_INTERRUPT_NONE = 0, ///< Interrupt disabled.
+	GPIO_INTERRUPT_RISING = 1 << 0, ///< Interrupt on a rising edge.
+	GPIO_INTERRUPT_FALLING = 1 << 1, ///< Interrupt on a falling edge.
+	GPIO_INTERRUPT_CHANGE = GPIO_INTERRUPT_RISING | GPIO_INTERRUPT_FALLING ///< Interrupt on both edges.
 };
 
 /**
@@ -167,7 +170,12 @@ class GPIOPort {
 		}
 		
 		/**
-			\brief Attach interrupt handler to GPIO bit
+			\brief Attach interrupt handler to GPIO bit.
+			\param[in] pad Index of bit which should generate interrupt.
+			\param[in] mode Conditions that generates interrupt.
+			\param[in] handler Callback.
+			\param[in] arg Callback argument.
+			\return Returns true if bit supports interrupt handlers.
 		*/
 		virtual bool attachInterrupt(GPIOBitIndex pad, GPIOInterruptMode mode, GPIOInterruptHandler handler, void *arg) {
 			return false;
@@ -216,7 +224,11 @@ class GPIOPad {
 		}
 		
 		/**
-			\brief Attach interrupt to GPIO pad.
+			\brief Attach interrupt handler to GPIO pad.
+			\param[in] mode Conditions that generates interrupt.
+			\param[in] handler Callback.
+			\param[in] arg Callback argument.
+			\return Returns true if bit supports interrupt handlers.
 		*/
 		virtual bool attachInterrupt(GPIOInterruptMode mode, GPIOInterruptHandler handler, void *arg) {
 			return false;
