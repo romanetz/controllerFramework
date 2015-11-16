@@ -204,6 +204,10 @@ class STM32RCC {
 			\return Return true if PLL setup correct or false if it is not possible to make outClk from inClk.
 		*/
 		static bool setupPLL(STM32ClockSource src, uint32_t inClk, uint32_t outClk);
+		
+		static void setADCPrescaler(uint32_t value) {
+			RCC->CFGR = (RCC->CFGR & ~RCC_CFGR_ADCPRE_MASK) | (value << RCC_CFGR_ADCPRE_OFFSET);
+		}
 #else
 		/**
 			\brief Low-level PLL setup.

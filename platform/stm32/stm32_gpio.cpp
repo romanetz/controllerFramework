@@ -195,12 +195,16 @@ static int gpioPortIndex(volatile STM32GPIORegs *gpio) {
 static bool gpioAttachInterrupt(volatile STM32GPIORegs *gpio, GPIOBitIndex bit, GPIOInterruptMode mode, GPIOInterruptHandler handler, void *arg) {
 	int portIndex = gpioPortIndex(gpio);
 	if ((portIndex >= 0) && (bit < 16)) {
+#ifdef STM32F1
 		STM32RCC::periphClockEnable(AFIO);
+#endif
 		EXTI->IMR &= ~(1 << bit);
 		gpioInterruptHandlers[bit].func = handler;
 		gpioInterruptHandlers[bit].arg = arg;
+#ifdef STM32F1
 		AFIO->EXTICR[bit / 4] &= ~(0xF << ((bit % 4) * 4));
 		AFIO->EXTICR[bit / 4] |= portIndex << ((bit % 4) * 4);
+#endif
 		if (mode & GPIO_INTERRUPT_RISING) {
 			EXTI->RTSR |= 1 << bit;
 		} else {

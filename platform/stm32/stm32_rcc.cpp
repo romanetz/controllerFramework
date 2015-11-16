@@ -60,7 +60,10 @@ static const PeriphInfo periphTable[] = {
 #ifdef I2C3
 	{I2C3, &RCC->APB1ENR, RCC_APB1ENR_I2C3EN},
 #endif
+#ifdef STM32F1
 	{AFIO, &RCC->APB2ENR, RCC_APB2ENR_AFIOEN},
+	{USB, &RCC->APB1ENR, RCC_APB1ENR_USBEN},
+#endif
 	{}
 };
 
@@ -192,13 +195,16 @@ bool STM32RCC::setupPLL(STM32ClockSource src, uint32_t inClk, uint32_t outClk) {
 	if (inClk && outClk) {
 		uint32_t cfg = (src == STM32_CLOCKSOURCE_HSE) ? RCC_CFGR_PLLSRC : 0;
 		uint32_t mul = outClk / inClk;
+		if (src == STM32_CLOCKSOURCE_HSI) {
+			mul *= 2;
+		}
 		if (mul && (mul <= 15)) {
 			if (mul < 8) {
 				cfg |= RCC_CFGR_PLLXTPRE;
 				mul *= 2;
 			}
 			cfg |= (mul - 2) << RCC_CFGR_PLLMUL_OFFSET;
-			if (outClk > 48000000) {
+			if (outClk <= 48000000) {
 				cfg |= RCC_CFGR_OTGFSPRE;
 			}
 			RCC->CFGR = (RCC->CFGR & ~(RCC_CFGR_PLLMUL_MASK | RCC_CFGR_PLLXTPRE | RCC_CFGR_OTGFSPRE)) | cfg;
@@ -289,6 +295,7 @@ bool STM32RCC::usePLL(STM32ClockSource src, uint32_t inClk, uint32_t outClk) {
 				setAHBPrescaler(RCC_AHB_NODIV);
 				_ahbFreq = _sysFreq;
 #ifdef STM32F1
+				setADCPrescaler(3);
 				setAPB1Prescaler(RCC_APB_DIV2);
 				setAPB2Prescaler(RCC_APB_NODIV);
 				_apb1Freq = _sysFreq / 2;

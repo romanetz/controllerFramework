@@ -1,4 +1,4 @@
-PROJECT_NAME = stm32sensors
+PROJECT_NAME = stm32f4-discovery-example
 PROJECT_DIR = .
 
 SOURCES = $(wildcard $(PROJECT_DIR)/*.cpp)

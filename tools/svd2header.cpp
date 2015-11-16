@@ -131,6 +131,11 @@ int convertSvdToHeader(TiXmlDocument *xmlDoc, FILE *output) {
 				const char *desc = getNodeAttr(interruptNode, "description", NULL);
 				const char *value = getNodeAttr(interruptNode, "value", NULL);
 				if (name && value) {
+					int len = strlen(name);
+					if ((len > 4) && (strcmp(name + len - 4, "_IRQ") == 0)) {
+						char *_name = (char*)name;
+						_name[len - 4] = 0;
+					}
 					InterruptInfo interruptInfo;
 					interruptInfo.name = name;
 					interruptInfo.desc = desc;
