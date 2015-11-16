@@ -36,12 +36,21 @@ struct STM32GPIORegs {
 #endif
 };
 
-#ifdef STM32F1
+#ifdef AFIO_BASE
 struct STM32AFIORegs {
 	uint32_t EVCR;
 	uint32_t MAPR;
 	uint32_t EXTICR[4];
 	uint32_t MAPR2;
+};
+#endif
+
+#ifdef SYSCFG_BASE
+struct STM32SYSCFGRegs {
+	uint32_t MEMRM;
+	uint32_t PMC;
+	uint32_t EXTICR[4];
+	uint32_t CMPCR;
 };
 #endif
 
@@ -54,8 +63,12 @@ struct STM32EXTIRegs {
 	uint32_t PR;
 };
 
-#ifdef STM32F1
+#ifdef AFIO_BASE
 #define AFIO MMIO(AFIO_BASE, STM32AFIORegs)
+#endif
+
+#ifdef SYSCFG_BASE
+#define SYSCFG MMIO(SYSCFG_BASE, STM32SYSCFGRegs)
 #endif
 
 #define EXTI MMIO(EXTI_BASE, STM32EXTIRegs)

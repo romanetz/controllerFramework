@@ -60,8 +60,13 @@ static const PeriphInfo periphTable[] = {
 #ifdef I2C3
 	{I2C3, &RCC->APB1ENR, RCC_APB1ENR_I2C3EN},
 #endif
-#ifdef STM32F1
+#ifdef AFIO_BASE
 	{AFIO, &RCC->APB2ENR, RCC_APB2ENR_AFIOEN},
+#endif
+#ifdef SYSCFG_BASE
+	{SYSCFG, &RCC->APB2ENR, RCC_APB2ENR_SYSCFGEN},
+#endif
+#ifdef STM32F1
 	{USB, &RCC->APB1ENR, RCC_APB1ENR_USBEN},
 #endif
 	{}
