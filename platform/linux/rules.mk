@@ -3,7 +3,7 @@ TARGET ?=
 SOURCES += $(wildcard $(PLATFORM_DIR)/*.cpp)
 INCLUDE_PATH += $(PLATFORM_DIR)
 
-LFLAGS += -lstdc++
+LFLAGS += -lstdc++ -lpthread
 
 OUTPUT_FILES = $(BUILD_DIR)/$(PROJECT_NAME).elf
 

@@ -86,6 +86,8 @@ class STM32USBDriver: public USBDriver {
 		STM32USBDriver(const USBDeviceDescr *deviceDescr, const USBConfigDescr **configs,
 			const USBStringDescr **strings, int stringCount, bool connect = false);
 		
+		~STM32USBDriver();
+		
 		void connect();
 		
 		void disconnect();

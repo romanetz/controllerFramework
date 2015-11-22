@@ -1,6 +1,7 @@
-#ifndef __QUEUE_H__
-#define __QUEUE_H__
+#ifndef __MEMORY_BUFFER_H__
+#define __MEMORY_BUFFER_H__
 
+#include <mutex.h>
 #include <iochannel.h>
 
 class MemoryBuffer: public IOChannel {
@@ -12,6 +13,10 @@ class MemoryBuffer: public IOChannel {
 		volatile int _dataBegin;
 		
 		volatile int _dataEnd;
+		
+		Mutex _writeMutex;
+		
+		Mutex _readMutex;
 		
 	protected:
 		int writeData(const char *data, int len, int timeout);

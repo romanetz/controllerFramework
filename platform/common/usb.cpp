@@ -48,10 +48,10 @@ void USBDriver::handleEP0Event(int ep, bool setup) {
 			epStartRx(0 | USB_ENDPOINT_OUT);
 			if (len >= (int)sizeof(_setupRequest)) {
 				if ((_setupRequest.bmRequestType & USB_REQ_DIR_MASK) == USB_REQ_DIR_HOST_TO_DEVICE) {
-					if (_ep0RxBuffer) free(_ep0RxBuffer);
+					if (_ep0RxBuffer) free(_ep0RxBuffer); // FIXME
 					_ep0RxCount = _setupRequest.wLength;
 					if (_ep0RxCount > 0) {
-						_ep0RxBuffer = (uint8_t*)malloc(_ep0RxCount);
+						_ep0RxBuffer = (uint8_t*)malloc(_ep0RxCount); // FIXME
 					} else {
 						_ep0RxBuffer = NULL;
 					}
@@ -70,7 +70,7 @@ void USBDriver::handleEP0Event(int ep, bool setup) {
 			if (!handleSetupRequest(_setupRequest, _ep0RxBuffer, _setupRequest.wLength)) {
 				epStall(0 | USB_ENDPOINT_IN);
 			}
-			free(_ep0RxBuffer);
+			free(_ep0RxBuffer); // FIXME
 			_ep0RxBuffer = NULL;
 		}
 	} else if (ep == (0 | USB_ENDPOINT_IN)) {

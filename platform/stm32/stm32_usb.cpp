@@ -12,6 +12,10 @@ STM32USBDriver::STM32USBDriver(const USBDeviceDescr *deviceDescr, const USBConfi
 	}
 }
 
+STM32USBDriver::~STM32USBDriver() {
+	disconnect();
+}
+
 void STM32USBDriver::connect() {
 	usbDriver = this;
 	STM32RCC::periphClockEnable(USB);
@@ -30,7 +34,7 @@ void STM32USBDriver::disconnect() {
 	NVIC::disableIRQ(USB_FS_WKUP_IRQ);
 	NVIC::disableIRQ(CAN1_RX0_IRQ);
 	STM32RCC::periphClockDisable(USB);
-	usbDriver = 0;
+	usbDriver = NULL;
 }
 
 void STM32USBDriver::copyToBufferArea(uint32_t offset, const void *data, int count) {
