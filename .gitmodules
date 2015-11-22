@@ -1,3 +1,0 @@
-[submodule "platform/common/freertos"]
-	path = platform/common/freertos
-	url = https://github.com/cjlano/freertos
