@@ -10,6 +10,9 @@ uint32_t STM32RCC::_sysFreq = 8000000;
 uint32_t STM32RCC::_ahbFreq;
 uint32_t STM32RCC::_apb1Freq;
 uint32_t STM32RCC::_apb2Freq;
+#ifdef STM32F1
+uint32_t STM32RCC::_adcFreq;
+#endif
 
 static const PeriphInfo periphTable[] = {
 #ifdef STM32F1
@@ -277,6 +280,10 @@ bool STM32RCC::useHSI() {
 	setAPB1Prescaler(RCC_APB_NODIV);
 	setAPB2Prescaler(RCC_APB_NODIV);
 	_sysFreq = 8000000;
+#ifdef STM32F1
+	setADCPrescaler(STM32_ADCPRESCALER_DIV2);
+	_adcFreq = _sysFreq / 2;
+#endif
 	_ahbFreq = _sysFreq;
 	_apb1Freq = _sysFreq;
 	_apb2Freq = _sysFreq;
@@ -287,13 +294,17 @@ bool STM32RCC::useHSE(uint32_t clk) {
 	if (clk) {
 		enableClockSource(STM32_CLOCKSOURCE_HSE);
 		if (waitClockSourceReady(STM32_CLOCKSOURCE_HSE)) {
+			waitClockSourceSelected(STM32_CLOCKSOURCE_HSE);
+			selectClockSource(STM32_CLOCKSOURCE_HSE);
 			setAHBPrescaler(RCC_AHB_NODIV);
 			setAPB1Prescaler(RCC_APB_NODIV);
 			setAPB2Prescaler(RCC_APB_NODIV);
-			selectClockSource(STM32_CLOCKSOURCE_HSE);
-			waitClockSourceSelected(STM32_CLOCKSOURCE_HSE);
-			FLASH_ACR = (FLASH_ACR & ~FLASH_ACR_LATENCY_MASK) | ((clk - 1) / 24000000);
 			_sysFreq = clk;
+#ifdef STM32F1
+			setADCPrescaler(STM32_ADCPRESCALER_DIV2);
+			_adcFreq = _sysFreq / 2;
+#endif
+			FLASH_ACR = (FLASH_ACR & ~FLASH_ACR_LATENCY_MASK) | ((clk - 1) / 24000000);
 			_ahbFreq = _sysFreq;
 			_apb1Freq = _sysFreq;
 			_apb2Freq = _sysFreq;
@@ -314,10 +325,27 @@ bool STM32RCC::usePLL(STM32ClockSource src, uint32_t inClk, uint32_t outClk) {
 				setAHBPrescaler(RCC_AHB_NODIV);
 				_ahbFreq = _sysFreq;
 #ifdef STM32F1
-				setADCPrescaler(3);
-				setAPB1Prescaler(RCC_APB_DIV2);
+				if (outClk <= 28000000) {
+					setADCPrescaler(STM32_ADCPRESCALER_DIV2);
+					_adcFreq = _sysFreq / 2;
+				} else if (outClk <= 56000000) {
+					setADCPrescaler(STM32_ADCPRESCALER_DIV4);
+					_adcFreq = _sysFreq / 4;
+				} else if (outClk <= 84000000) {
+					setADCPrescaler(STM32_ADCPRESCALER_DIV6);
+					_adcFreq = _sysFreq / 6;
+				} else {
+					setADCPrescaler(STM32_ADCPRESCALER_DIV8);
+					_adcFreq = _sysFreq / 8;
+				}
+				if (outClk <= 36000000) {
+					setAPB1Prescaler(RCC_APB_NODIV);
+					_apb1Freq = _sysFreq;
+				} else {
+					setAPB1Prescaler(RCC_APB_DIV2);
+					_apb1Freq = _sysFreq / 2;
+				}
 				setAPB2Prescaler(RCC_APB_NODIV);
-				_apb1Freq = _sysFreq / 2;
 				_apb2Freq = _sysFreq;
 #else
 				setAPB1Prescaler(RCC_APB_DIV4);

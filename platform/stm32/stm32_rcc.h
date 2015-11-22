@@ -107,6 +107,15 @@ enum STM32ClockSource {
 	STM32_CLOCKSOURCE_PLL ///< PLL.
 };
 
+#ifdef STM32F1
+enum STM32ADCPrescaler {
+	STM32_ADCPRESCALER_DIV2 = 0,
+	STM32_ADCPRESCALER_DIV4 = 1,
+	STM32_ADCPRESCALER_DIV6 = 2,
+	STM32_ADCPRESCALER_DIV8 = 3
+};
+#endif
+
 /**
 	\brief
 	Reset and Clock Control.
@@ -120,6 +129,10 @@ class STM32RCC {
 		static uint32_t _apb1Freq;
 		
 		static uint32_t _apb2Freq;
+		
+#ifdef STM32F1
+		static uint32_t _adcFreq;
+#endif
 	
 	public:
 		/**
@@ -208,6 +221,8 @@ class STM32RCC {
 		static void setADCPrescaler(uint32_t value) {
 			RCC->CFGR = (RCC->CFGR & ~RCC_CFGR_ADCPRE_MASK) | (value << RCC_CFGR_ADCPRE_OFFSET);
 		}
+		
+		uint32_t adcFrequency() { return _adcFreq; };
 #else
 		/**
 			\brief Low-level PLL setup.
