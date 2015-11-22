@@ -1,4 +1,4 @@
-PROJECT_NAME = stm32-sensors
+PROJECT_NAME = stm32-usbcdc
 PROJECT_DIR = .
 
 SOURCES = $(wildcard $(PROJECT_DIR)/*.cpp)
