@@ -77,6 +77,8 @@ typedef void (*GPIOInterruptHandler)(void *arg);
 */
 class GPIOPort {
 	public:
+		virtual ~GPIOPort() {};
+		
 		/**
 			\brief Set options for some bits of GPIO port.
 			\param[in] bits Set of GPIO bits.

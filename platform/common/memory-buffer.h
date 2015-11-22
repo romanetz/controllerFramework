@@ -26,8 +26,8 @@ class MemoryBuffer: public IOChannel {
 	public:
 		MemoryBuffer(int size);
 		
-		~MemoryBuffer();
-		
+		virtual ~MemoryBuffer();
+	
 		int size() { return _bufferSize; }
 		
 		void setSize(int size);

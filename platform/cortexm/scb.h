@@ -37,7 +37,9 @@ struct SCBRegs {
 	uint32_t ID_ISAR2;
 	uint32_t ID_ISAR3;
 	uint32_t ID_ISAR4;
+	uint32_t RESERVED1[5];
 	uint32_t CPACR;
+	uint32_t RESERVED2[108];
 	uint32_t FPCCR;
 	uint32_t FPCAR;
 	uint32_t FPDSCR;

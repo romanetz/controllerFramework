@@ -64,8 +64,10 @@ static uint8_t timerIRQ(volatile STM32TimerRegs *timer) {
 			return TIM4_IRQ;
 		case TIM5_BASE:
 			return TIM5_IRQ;
+#ifdef TIM6_IRQ
 		case TIM6_BASE:
 			return TIM6_IRQ;
+#endif
 		case TIM7_BASE:
 			return TIM7_IRQ;
 		case TIM8_BASE:
@@ -86,6 +88,8 @@ static uint8_t timerIRQ(volatile STM32TimerRegs *timer) {
 
 STM32Timer::STM32Timer(volatile STM32TimerRegs *timer) : _timer(timer) {
 	STM32RCC::periphClockEnable(timer);
+	memset(channels, 0, sizeof(channels));
+	_callback = NULL;
 	NVIC::enableIRQ(timerIRQ(timer));
 	STM32Timer **objPtr = timerObj(timer);
 	if (objPtr) {
@@ -95,6 +99,8 @@ STM32Timer::STM32Timer(volatile STM32TimerRegs *timer) : _timer(timer) {
 
 STM32Timer::STM32Timer(volatile STM32TimerRegs *timer, int freq, TimerCallback callback, void *arg, bool enable) : _timer(timer) {
 	STM32RCC::periphClockEnable(timer);
+	memset(channels, 0, sizeof(channels));
+	_callback = NULL;
 	NVIC::enableIRQ(timerIRQ(timer));
 	STM32Timer **objPtr = timerObj(timer);
 	if (objPtr) {
@@ -108,6 +114,10 @@ STM32Timer::STM32Timer(volatile STM32TimerRegs *timer, int freq, TimerCallback c
 }
 
 STM32Timer::~STM32Timer() {
+	int count = channelCount();
+	for (int i = 0; i < count; i++) {
+		delete channels[i];
+	}
 	STM32RCC::periphClockDisable(_timer);
 	STM32Timer **objPtr = timerObj(_timer);
 	if (objPtr) {
@@ -183,6 +193,81 @@ void STM32Timer::interruptHandler() {
 			}
 		}
 	}
+}
+
+int STM32Timer::channelCount() {
+	switch ((uint32_t)_timer) {
+		case TIM1_BASE:
+		case TIM2_BASE:
+		case TIM3_BASE:
+		case TIM4_BASE:
+		case TIM5_BASE:
+		case TIM8_BASE:
+			return 4;
+		case TIM9_BASE:
+		case TIM12_BASE:
+			return 2;
+		case TIM10_BASE:
+		case TIM11_BASE:
+		case TIM13_BASE:
+		case TIM14_BASE:
+			return 1;
+		default:
+			return 0;
+	}
+}
+
+PWMChannel *STM32Timer::channel(int index) {
+	if ((index >= 0) && (index < channelCount())) {
+		if (channels[index] == NULL) {
+			channels[index] = new STM32TimerChannel(*this, index);
+		}
+		return channels[index];
+	} else {
+		return NULL;
+	}
+}
+
+STM32TimerChannel::STM32TimerChannel(STM32Timer& timer, int channel) : _timer(timer), _index(channel) {}
+
+STM32TimerChannel::~STM32TimerChannel() {
+	disable();
+}
+
+void STM32TimerChannel::setMode(uint8_t mode) {
+	uint32_t reg = _timer.mmioRegs()->CCMR[_index / 2];
+	reg &= ~(0xFF << ((_index % 2) * 8));
+	reg |= mode << ((_index % 2) * 8);
+	_timer.mmioRegs()->CCMR[_index / 2] = reg;
+}
+
+void STM32TimerChannel::enable() {
+	setMode(TIM1_CCMR1_Output_OC1PE | (6 << TIM1_CCMR1_Output_OC1M_OFFSET));
+	_timer.mmioRegs()->CCER |= TIM1_CCER_CC1E << (_index * 4);
+}
+
+void STM32TimerChannel::disable() {
+	setMode(TIM1_CCMR1_Output_OC1PE | (0 << TIM1_CCMR1_Output_OC1M_OFFSET));
+}
+
+bool STM32TimerChannel::enabled() {
+	return (((_timer.mmioRegs()->CCMR[_index / 2] >> ((_index % 2) * 8))) & TIM1_CCMR1_Output_OC1M_MASK) != 0;
+}
+
+int STM32TimerChannel::value() {
+	return _timer.mmioRegs()->CCR[_index];
+}
+
+void STM32TimerChannel::setValue(int value) {
+	_timer.mmioRegs()->CCR[_index] = value;
+}
+
+int STM32TimerChannel::minValue() {
+	return 0;
+}
+
+int STM32TimerChannel::maxValue() {
+	return _timer.reloadValue();
 }
 
 ISR(TIM1_UP_TIM10_vect) {

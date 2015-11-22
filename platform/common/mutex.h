@@ -10,7 +10,7 @@ class Mutex {
 	public:
 		Mutex();
 		
-		~Mutex();
+		virtual ~Mutex();
 		
 		bool lock(int timeout = -1);
 		

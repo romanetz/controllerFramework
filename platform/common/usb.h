@@ -83,6 +83,8 @@ class USBDriver {
 	public:
 		USBDriver(const USBDeviceDescr *deviceDescr, const USBConfigDescr **configs, const USBStringDescr **stringDescr, int stringCount);
 		
+		virtual ~USBDriver() {};
+		
 		virtual void connect() = 0;
 		
 		virtual void disconnect() = 0;

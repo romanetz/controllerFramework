@@ -3,6 +3,7 @@
 
 #include <stm32.h>
 #include <timer.h>
+#include <pwm.h>
 
 struct STM32TimerRegs {
 	uint32_t CR1; // 0x00
@@ -11,17 +12,13 @@ struct STM32TimerRegs {
 	uint32_t DIER; // 0x0C
 	uint32_t SR; // 0x10
 	uint32_t EGR; // 0x14
-	uint32_t CCMR1; // 0x18
-	uint32_t CCMR2; // 0x1C
+	uint32_t CCMR[2]; // 0x18 - 0x1C
 	uint32_t CCER; // 0x20
 	uint32_t CNT; // 0x24
 	uint32_t PSC; // 0x28
 	uint32_t ARR; // 0x2C
 	uint32_t RCR; // 0x30
-	uint32_t CCR1; // 0x34
-	uint32_t CCR2; // 0x38
-	uint32_t CCR3; // 0x3C
-	uint32_t CCR4; // 0x40
+	uint32_t CCR[4]; // 0x34 - 0x40
 	uint32_t BDTR; // 0x44
 	uint32_t DCR; // 0x48
 	uint32_t DMAR; // 0x4C
@@ -42,7 +39,38 @@ struct STM32TimerRegs {
 #define TIM13 MMIO(TIM13_BASE, STM32TimerRegs)
 #define TIM14 MMIO(TIM14_BASE, STM32TimerRegs)
 
-class STM32Timer: public Timer {
+class STM32Timer;
+
+class STM32TimerChannel: public PWMChannel {
+	private:
+		STM32Timer& _timer;
+		
+		int _index;
+		
+	public:
+		STM32TimerChannel(STM32Timer& timer, int channel);
+		
+		~STM32TimerChannel();
+		
+		void enable();
+		
+		void disable();
+		
+		bool enabled();
+		
+		int value();
+		
+		void setValue(int value);
+		
+		int minValue();
+		
+		int maxValue();
+		
+		void setMode(uint8_t mode);
+		
+};
+
+class STM32Timer: public Timer, public PWMGroup {
 	private:
 		volatile STM32TimerRegs *_timer;
 		
@@ -51,6 +79,8 @@ class STM32Timer: public Timer {
 		TimerCallback _callback;
 		
 		void *_callbackArg;
+		
+		STM32TimerChannel *channels[4];
 		
 	public:
 		STM32Timer(volatile STM32TimerRegs *timer);
@@ -84,6 +114,10 @@ class STM32Timer: public Timer {
 		volatile STM32TimerRegs *mmioRegs() { return _timer; };
 		
 		void interruptHandler();
+		
+		int channelCount();
+		
+		PWMChannel *channel(int index);
 		
 };
 

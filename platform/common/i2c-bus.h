@@ -32,6 +32,8 @@ struct I2CTransaction {
 */
 class I2CBus {
 	public:
+		virtual ~I2CBus() {};
+		
 		/**
 			\brief Set I2C bus baudrate.
 			\param[in] baudrate Desired bus baudrate.

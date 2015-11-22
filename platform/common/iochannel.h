@@ -32,6 +32,8 @@ class IOChannel {
 		virtual int readData(char *buffer, int len, int timeout) = 0;
 	
 	public:
+		virtual ~IOChannel() {};
+		
 		/**
 			\brief Write bytes to the channel.
 			\param[in] data Pointer to byte array.

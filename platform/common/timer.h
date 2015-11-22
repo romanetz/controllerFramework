@@ -7,6 +7,8 @@ typedef bool (*TimerCallback)(Timer& timer, void *arg);
 
 class Timer {
 	public:
+		virtual ~Timer() {};
+		
 		virtual int frequency() = 0;
 		
 		virtual void setFrequency(int freq) = 0;
