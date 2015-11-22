@@ -23,10 +23,10 @@ int main(void) {
 	while (1) {
 		led1.toggle();
 		led2.toggle();
-		if (usbCdc.ready()) {
-			usbCdc.printf("Hello world\r\n");
+		char chr;
+		if (usbCdc.read(&chr, sizeof(chr))) {
+			usbCdc.printf("You are typed: %i\r\n", chr);
 		}
-		usleep(250000);
 	}
 	return 0;
 }
