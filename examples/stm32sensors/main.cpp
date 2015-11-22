@@ -20,7 +20,7 @@ STM32GPIOPad usart1tx(gpioA, 9, GPIO_MODE_ALTFN);
 STM32GPIOPad usart1rx(gpioA, 10, GPIO_MODE_INPUT);
 
 STM32I2CDriver i2c1(I2C1, 400000);
-STM32USART usart1(USART1, STM32_USART_TX_RX, 9600);
+STM32USART usart1(USART1, 64, 64, STM32_USART_TX_RX, 115200);
 
 MPU6050 mpu6050(i2c1, MPU6050_DEFAULT_ADDRESS);
 HMC5883 hmc5883(i2c1, HMC5883_I2C_ADDRESS);
@@ -41,7 +41,6 @@ void decCounter(void *arg) {
 int main(void) {
 	led1.clear();
 	led2.clear();
-	usleep(1000000);
 	bool mpu6050error = true, hmc5883error = true, ms5611error = true;
 	button1.attachInterrupt(GPIO_INTERRUPT_FALLING, incCounter, NULL);
 	button2.attachInterrupt(GPIO_INTERRUPT_FALLING, decCounter, NULL);
@@ -49,6 +48,10 @@ int main(void) {
 		led1.toggle();
 		usleep(500000);
 		led2.toggle();
+		char chr;
+		if (usart1.read(&chr, sizeof(chr), 0) >= (int)sizeof(chr)) {
+			usart1.printf("YOUR ARE TYPED: %i\r\n", chr);
+		}
 		usart1.printf("BUTTON1=%i BUTTON2=%i COUNTER=%i\r\n", button1.read(), button2.read(), counter);
 		if (mpu6050error && mpu6050.detect()) {
 			mpu6050error = !mpu6050.setup();

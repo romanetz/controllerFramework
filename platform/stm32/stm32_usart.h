@@ -8,6 +8,7 @@
 #define __STM32_USART_H__
 
 #include <stm32.h>
+#include <memory-buffer.h>
 #include <serialport.h>
 
 /**
@@ -63,7 +64,7 @@ class STM32USART : public SerialPort {
 			\brief Initialize USART object.
 			\param[in] usart STM32 USART MMIO registers.
 		*/
-		STM32USART(volatile STM32USARTRegs* usart);
+		STM32USART(volatile STM32USARTRegs* usart, int txBufferSize, int rxBufferSize);
 		
 		/**
 			\brief Initialize USART object and setup peripheral.
@@ -75,9 +76,11 @@ class STM32USART : public SerialPort {
 			\param[in] parity Parity check mode.
 			\param[in] flowControl Flow control mode (hardware flow control available only for some USARTs).
 		*/
-		STM32USART(volatile STM32USARTRegs* usart, STM32USARTMode mode, uint32_t baudrate, SerialPortDataBits dataBits = SERIALPORT_DATA_8BIT,
-				SerialPortStopBits stopBits = SERIALPORT_STOP_1BIT, SerialPortParity parity = SERIALPORT_PARITY_NONE,
-				SerialPortFlowControl flowControl = SERIALPORT_FLOWCONTROL_NONE);
+		STM32USART(volatile STM32USARTRegs* usart, int txBufferSize, int rxBufferSize, STM32USARTMode mode, uint32_t baudrate,
+			SerialPortDataBits dataBits = SERIALPORT_DATA_8BIT, SerialPortStopBits stopBits = SERIALPORT_STOP_1BIT,
+			SerialPortParity parity = SERIALPORT_PARITY_NONE, SerialPortFlowControl flowControl = SERIALPORT_FLOWCONTROL_NONE);
+		
+		~STM32USART();
 		
 		/**
 			\brief Set USART RX/TX mode.
@@ -95,7 +98,15 @@ class STM32USART : public SerialPort {
 		
 		void setFlowControl(SerialPortFlowControl flowControl);
 		
+		void flush();
+		
+		void interruptHandler();
+		
 	private:
+		MemoryBuffer _txBuffer;
+		
+		MemoryBuffer _rxBuffer;
+		
 		int writeData(const char *data, int len, int timeout);
 		
 		int readData(char *buffer, int len, int timeout);

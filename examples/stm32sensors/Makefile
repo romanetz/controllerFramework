@@ -1,10 +1,9 @@
-PROJECT_NAME = stm32sensors
+PROJECT_NAME = stm32-sensors
 PROJECT_DIR = .
 
 SOURCES = $(wildcard $(PROJECT_DIR)/*.cpp)
 
-#PLATFORM ?= stm32f407vg
-PLATFORM ?= stm32f103ze
+PLATFORM ?= stm32f103c8
 
 CFLAGS ?= -O2 -ggdb -Wall -Werror
 

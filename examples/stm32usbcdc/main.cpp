@@ -16,6 +16,8 @@ STM32GPIOPad led2(gpioE, 2, GPIO_MODE_OUTPUT);
 STM32USBDriver usbDriver(&deviceDescr, usbConfigs, usbStrings, sizeof(usbStrings) / sizeof(usbStrings[0]));
 USBCDC usbCdc(usbDriver, 1, 0, 1);
 
+extern ptrdiff_t heapPtr;
+
 int main(void) {
 	led1.clear();
 	led2.set();
@@ -25,7 +27,7 @@ int main(void) {
 		led2.toggle();
 		char chr;
 		if (usbCdc.read(&chr, sizeof(chr))) {
-			usbCdc.printf("You are typed: %i\r\n", chr);
+			usbCdc.printf("You are typed: %i (heapPtr = %p)\r\n", chr, heapPtr);
 		}
 	}
 	return 0;
