@@ -10,6 +10,7 @@
 #include <cortexm.h>
 #include <stm32_rcc.h>
 #include <stm32_gpio.h>
+#include <stm32_timer.h>
 #include <stm32_usart.h>
 #include <stm32_i2c.h>
 #include <stm32_usb.h>

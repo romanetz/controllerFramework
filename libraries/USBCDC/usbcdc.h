@@ -62,6 +62,8 @@ class USBCDC: public IOChannel, public USBDriverHook {
 		
 		bool ready() { return _ready; };
 		
+		void flush();
+		
 };
 
 #endif

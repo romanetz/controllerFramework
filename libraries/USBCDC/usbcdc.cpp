@@ -125,3 +125,7 @@ int USBCDC::writeData(const char *data, int len, int timeout) {
 int USBCDC::readData(char *buffer, int len, int timeout) {
 	return _rxBuffer.read(buffer, len, timeout);
 }
+
+void USBCDC::flush() {
+	_rxBuffer.clear();
+}
