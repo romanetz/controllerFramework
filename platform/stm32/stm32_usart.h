@@ -96,9 +96,9 @@ class STM32USART : public SerialPort {
 		void setFlowControl(SerialPortFlowControl flowControl);
 		
 	private:
-		int writeData(const char *data, int len);
+		int writeData(const char *data, int len, int timeout);
 		
-		int readData(char *buffer, int len);
+		int readData(char *buffer, int len, int timeout);
 		
 };
 

@@ -12,6 +12,7 @@
 #include <stm32_gpio.h>
 #include <stm32_usart.h>
 #include <stm32_i2c.h>
+#include <stm32_usb.h>
 
 inline void platform_init() {
 #if defined STM32F4 || defined STM32F3

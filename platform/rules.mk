@@ -13,7 +13,7 @@ SOURCES += $(wildcard $(BASE_DIR)/platform/common/*.cpp)
 HEADERS += $(BUILD_DIR)/platform.h
 INCLUDE_PATH += $(BASE_DIR)/platform/common $(BUILD_DIR)
 
-CFLAGS += -fno-exceptions -fno-rtti
+CFLAGS += -fno-exceptions -fno-rtti -std=c++11
 CFLAGS += $(foreach PATH, $(INCLUDE_PATH), -I$(PATH))
 
 OBJECTS += $(addprefix $(BUILD_DIR)/obj/, $(notdir $(SOURCES:.cpp=.o)))
@@ -24,6 +24,7 @@ SOURCES += $(wildcard $(BASE_DIR)/libraries/*/*.cpp)
 INCLUDE_PATH += $(wildcard $(BASE_DIR)/libraries/*)
 
 include $(PLATFORM_DIR)/rules.mk
+include $(BASE_DIR)/platform/common/rules.mk
 
 $(BUILD_DIR):
 	@echo "Creating $(BUILD_DIR) directory..."

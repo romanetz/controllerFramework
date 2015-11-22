@@ -36,11 +36,11 @@ class LinuxSerialPort: public SerialPort {
 		}
 		
 	protected:
-		int writeData(const char *data, int len) {
+		int writeData(const char *data, int len, int timeout) {
 			return ::write(_fd, data, len);
 		}
 		
-		int readData(char *buffer, int len) {
+		int readData(char *buffer, int len, int timeout) {
 			return ::read(_fd, buffer, len);
 		}
 		

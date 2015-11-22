@@ -6,7 +6,7 @@ MEMORY {
 #endif
 }
 
-EXTERN(vector_table)
+EXTERN(vectorTable)
 
 ENTRY(RESET_vect)
 

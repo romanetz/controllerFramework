@@ -105,17 +105,21 @@ void STM32USART::setFlowControl(SerialPortFlowControl flowControl) {
 	_usart->CR3 = (_usart->CR3 & ~(USART1_CR3_RTSE | USART1_CR3_CTSE)) | cfg;
 }
 
-int STM32USART::writeData(const char *data, int len) {
+int STM32USART::writeData(const char *data, int len, int timeout) {
 	for (int i = 0; i < len; i++) {
-		while ((_usart->SR & USART1_SR_TXE) == 0);
+		while ((_usart->SR & USART1_SR_TXE) == 0) {
+			if (timeout == 0) return i;
+		}
 		_usart->DR = data[i];
 	}
 	return len;
 }
 
-int STM32USART::readData(char *buffer, int len) {
+int STM32USART::readData(char *buffer, int len, int timeout) {
 	for (int i = 0; i < len; i++) {
-		while ((_usart->SR & USART1_SR_RXNE) == 0);
+		while ((_usart->SR & USART1_SR_RXNE) == 0) {
+			if (timeout == 0) return i;
+		}
 		buffer[i] = _usart->DR;
 	}
 	return len;

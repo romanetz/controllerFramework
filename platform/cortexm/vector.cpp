@@ -23,13 +23,14 @@ extern "C" void __attribute__((naked)) RESET_vect(void) {
 	while (dst < &_ebss) {
 		*(dst++) = 0;
 	}
+	SCB->CCR |= SCB_CCR_STKALIGN;
+	platform_init();
 	for (funcptr_t *func = &__preinit_array_start; func < &__preinit_array_end; func++) {
 		(*func)();
 	}
 	for (funcptr_t *func = &__init_array_start; func < &__init_array_end; func++) {
 		(*func)();
 	}
-	platform_init();
 	main();
 	for (funcptr_t *func = &__fini_array_start; func < &__fini_array_end; func++) {
 		(*func)();
@@ -69,7 +70,7 @@ ISR(DEBUG_MONITOR_vect);
 #pragma weak PEND_SV_vect = empty_handler
 ISR(PEND_SV_vect);
 
-__attribute__ ((section(".vectors"))) funcptr_t vector_table[] = {
+__attribute__ ((section(".vectors"))) funcptr_t vectorTable[] = {
 	(funcptr_t)&_stack,
 	RESET_vect,
 	NMI_vect, // NMI

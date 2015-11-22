@@ -44,9 +44,9 @@ class OneWireBus: public IOChannel {
 		void selectOne(uint64_t addr);
 		
 	protected:
-		int writeData(const char *data, int len);
+		int writeData(const char *data, int len, int timeout);
 		
-		int readData(char *buffer, int len);
+		int readData(char *buffer, int len, int timeout);
 		
 };
 

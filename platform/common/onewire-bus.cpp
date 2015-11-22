@@ -75,14 +75,14 @@ void OneWireBus::selectOne(uint64_t addr) {
 	}
 }
 
-int OneWireBus::writeData(const char *data, int len) {
+int OneWireBus::writeData(const char *data, int len, int timeout) {
 	for (int i = 0; i < len; i++) {
 		writeByte(data[i]);
 	}
 	return len;
 }
 
-int OneWireBus::readData(char *buffer, int len) {
+int OneWireBus::readData(char *buffer, int len, int timeout) {
 	for (int i = 0; i < len; i++) {
 		buffer[i] = readByte();
 	}
