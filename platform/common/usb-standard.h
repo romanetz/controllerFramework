@@ -1,8 +1,17 @@
+/**
+	@addtogroup platform Platform-independent
+	@{
+	@addtogroup usb USB
+	@{
+*/
 #ifndef __USB_STANDARD_H__
 #define __USB_STANDARD_H__
 
 #include <stdint.h>
 
+/**
+	@brief USB setup request.
+*/
 struct USBDeviceRequest {
 	uint8_t bmRequestType;
 	uint8_t bRequest;
@@ -57,6 +66,9 @@ struct USBDescriptor {
 #define USB_DESCR_HID_REPORT 0x22
 #define USB_DESCR_HID_PHYS 0x23
 
+/**
+	@brief USB device descriptor structure.
+*/
 struct USBDeviceDescr {
 	uint8_t bLength;
 	uint8_t bDescriptorType;
@@ -80,6 +92,9 @@ struct USBDeviceDescr {
 
 #define USB_SUBCLASS_ACM 2
 
+/**
+	@brief USB endpoint descriptor.
+*/
 struct USBEndpointDescr {
 	uint8_t bLength;
 	uint8_t bDescriptorType;
@@ -92,6 +107,9 @@ struct USBEndpointDescr {
 #define USB_ENDPOINT_OUT 0
 #define USB_ENDPOINT_IN 0x80
 
+/**
+	@brief USB interface descriptor.
+*/
 struct USBInterfaceDescr {
 	uint8_t bLength;
 	uint8_t bDescriptorType;
@@ -104,6 +122,9 @@ struct USBInterfaceDescr {
 	uint8_t iInterface;
 } __attribute__((packed));
 
+/**
+	@brief USB configuration descrtor.
+*/
 struct USBConfigDescr {
 	uint8_t bLength;
 	uint8_t bDescriptorType;
@@ -119,6 +140,9 @@ struct USBConfigDescr {
 #define USB_CONFIG_ATTR_SELF_POWERED (1 << 6)
 #define USB_CONFIG_ATTR_REMOTE_WAKEUP (1 << 5)
 
+/**
+	@brief USB string descriptor.
+*/
 struct USBStringDescr {
 	uint8_t bLength;
 	uint8_t bDescriptorType;
