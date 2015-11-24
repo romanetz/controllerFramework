@@ -42,7 +42,7 @@ static uint8_t adcIRQ(volatile STM32ADCRegs *adc) {
 	}
 }
 
-STM32ADC::STM32ADC(volatile STM32ADCRegs *adc) : _adc(adc) {
+STM32ADC::STM32ADC(volatile STM32ADCRegs *adc) : ADCGroup(), _adc(adc) {
 	STM32RCC::periphClockEnable(adc);
 	STM32ADC **obj = adcObj(adc);
 	if (obj) {
@@ -114,7 +114,7 @@ void STM32ADCChannel::setCallback(ADCChannelCallback callback, void *arg) {
 	_callbackArg = arg;
 }
 
-int STM32ADCChannel::value() {
+ADCValue STM32ADCChannel::value() {
 	return _value;
 }
 

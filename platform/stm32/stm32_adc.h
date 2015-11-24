@@ -55,7 +55,7 @@ class STM32ADCChannel: public ADCChannel {
 		
 		int resolution() { return 12; };
 		
-		int value();
+		ADCValue value();
 		
 		void setCallback(ADCChannelCallback callback, void *arg);
 		
