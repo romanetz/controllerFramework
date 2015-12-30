@@ -3,8 +3,6 @@
 
 #include <iostream.h>
 
-typedef struct SerialPortClass SerialPortClass;
-
 typedef enum SerialPortFlowControl {
 	SERIALPORT_FLOWCONTROL_NONE = 0,
 	SERIALPORT_FLOWCONTROL_CTS,
@@ -31,6 +29,10 @@ typedef enum SerialPortStopBits {
 	SERIALPORT_STOP_2BIT
 } SerialPortStopBits;
 
+#ifdef USE_CLASSES
+
+typedef struct SerialPortClass SerialPortClass;
+
 typedef void (*SerialPortSetBaudrateFunc)(SerialPortClass *port, uint32_t baudrate);
 typedef void (*SerialPortSetFlowControlFunc)(SerialPortClass *port, SerialPortFlowControl flowControl);
 typedef void (*SerialPortSetParityFunc)(SerialPortClass *port, SerialPortParity parity);
@@ -56,5 +58,7 @@ struct SerialPortClass {
 
 void serialPortSetup(void *port, uint32_t baudrate, SerialPortFlowControl flowControl, SerialPortParity parity,
 	SerialPortDataBits dataBits, SerialPortStopBits stopBits);
+
+#endif
 
 #endif

@@ -5,6 +5,8 @@
 #include <stdarg.h>
 #include <string.h>
 
+#ifdef USE_CLASSES
+
 typedef struct IOStreamClass IOStreamClass;
 
 typedef int (*IOStreamWriteTimeoutFunc)(IOStreamClass *stream, const void *data, int len, uint64_t timeout);
@@ -35,5 +37,7 @@ int ioStreamVPrintfTimeout(void *stream, const char *fmt, va_list *arg, uint64_t
 #define ioStreamVPrintf(stream, fmt, arg) ioStreamPrintfTimeout(stream, fmt, arg, -1)
 int ioStreamPrintfTimeout(void *stream, uint64_t timeout, const char *fmt, ...);
 #define ioStreamPrintf(stream, ...) ioStreamPrintfTimeout(stream, -1, __VA_ARGS__)
+
+#endif
 
 #endif

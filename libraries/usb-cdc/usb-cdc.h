@@ -5,6 +5,8 @@
 #include <iostream.h>
 #include <queue.h>
 
+#ifdef USE_CLASSES
+
 typedef struct USBCDCClass USBCDCClass;
 
 struct USBCDCClass {
@@ -26,5 +28,7 @@ struct USBCDCClass {
 
 USBCDCClass *usbCdcClassInit(USBCDCClass *usbCdc, USBDriverClass *usb, int txBufferSize, int rxBufferSize,
 	uint8_t bulkOutEp, uint16_t bulkOutChunkSize, uint8_t bulkInEp, uint16_t bulkInChunkSize, uint8_t intrInEp, uint16_t intrInChunkSize);
+
+#endif
 
 #endif

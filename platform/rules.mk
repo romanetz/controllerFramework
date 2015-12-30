@@ -17,6 +17,10 @@ Q ?= @
 
 INCLUDE_PATH += $(BUILD_DIR)/include
 
+ifneq ($(USE_CLASSES),no)
+CFLAGS += -DUSE_CLASSES
+endif
+
 LIBRARIES_DIR = $(FRAMEWORK_DIR)/libraries
 include $(LIBRARIES_DIR)/*/rules.mk
 

@@ -2,6 +2,8 @@
 
 #ifdef USB_BASE
 
+#ifdef USE_CLASSES
+
 static STM32USBDriverClass *usbDriver;
 
 static void stm32_usbSetAddress(uint8_t addr) {
@@ -294,5 +296,7 @@ ISR(CAN1_RX0_vect) {
 		STM32USBDriver_handleInterrupt(usbDriver);
 	}
 }
+
+#endif
 
 #endif

@@ -1,5 +1,7 @@
 #include <stm32.h>
 
+#ifdef USE_CLASSES
+
 static STM32USARTClass *usart1;
 static STM32USARTClass *usart2;
 static STM32USARTClass *usart3;
@@ -11,6 +13,8 @@ static STM32USARTClass *uart5;
 #endif
 #ifdef USART6_BASE
 static STM32USARTClass *usart6;
+#endif
+
 #endif
 
 static uint32_t stm32_usartClockFrequency(volatile STM32USARTRegs *usart) {
@@ -131,6 +135,8 @@ uint8_t stm32_usartReadChar(volatile STM32USARTRegs *usart) {
 void stm32_usartWriteChar(volatile STM32USARTRegs *usart, uint8_t chr) {
 	usart->DR = chr;
 }
+
+#ifdef USE_CLASSES
 
 static STM32USARTClass **stm32_usartObject(volatile STM32USARTRegs* usart) {
 	switch ((uint32_t)usart) {
@@ -263,4 +269,6 @@ ISR(UART5_vect) {
 ISR(USART6_vect) {
 	stm32_usartInterruptHandler(usart6);
 }
+#endif
+
 #endif

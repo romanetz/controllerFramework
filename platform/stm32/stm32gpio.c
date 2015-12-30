@@ -264,6 +264,8 @@ static uint8_t STM32GPIOClass_attachInterrupt(GPIOClass *gpio, GPIOInterruptMode
 	return stm32_gpioPortAttachInterrupt(stm32gpio->port, i, mode, handler, arg);
 }
 
+#ifdef USE_CLASSES
+
 STM32GPIOClass *stm32_gpioClassInit(STM32GPIOClass *obj, volatile STM32GPIORegs *port, uint16_t mask) {
 	GPIO_CLASS(obj)->setup = STM32GPIOClass_setup;
 	GPIO_CLASS(obj)->read = STM32GPIOClass_read;
@@ -275,6 +277,8 @@ STM32GPIOClass *stm32_gpioClassInit(STM32GPIOClass *obj, volatile STM32GPIORegs 
 	obj->mask = mask;
 	return obj;
 }
+
+#endif
 
 static void handleGPIOInterrupt(uint8_t bit) {
 	if (gpioInterruptHandlers[bit].func) {

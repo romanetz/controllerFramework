@@ -32,6 +32,8 @@ typedef enum GPIOInterruptMode {
 	GPIO_INTERRUPT_ANY = GPIO_INTERRUPT_RISING | GPIO_INTERRUPT_FALLING
 } GPIOInterruptMode;
 
+#ifdef USE_CLASSES
+
 typedef struct GPIOClass GPIOClass;
 
 typedef void (*GPIOInterruptHandler)(void *arg);
@@ -62,5 +64,7 @@ struct GPIOClass {
 #define gpioRead(gpio) GPIO_CLASS(gpio)->read(GPIO_CLASS(gpio))
 #define gpioWrite(gpio, value) do { if (value) { gpioSet(gpio); } else { gpioClear(gpio); } while(0)
 #define gpioAttachInterrupt(gpio, mode, handler, arg) (GPIO_CLASS(gpio)->attachInterrupt(GPIO_CLASS(gpio), mode, handler, arg))
+
+#endif
 
 #endif

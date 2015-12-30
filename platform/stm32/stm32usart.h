@@ -6,17 +6,6 @@
 #include <serialport.h>
 #include <queue.h>
 
-typedef struct STM32USARTClass STM32USARTClass;
-
-struct STM32USARTClass {
-	SerialPortClass parent;
-	volatile STM32USARTRegs *usart;
-	QueueClass txQueue;
-	QueueClass rxQueue;
-};
-
-#define STM32_USART_CLASS(obj) ((STM32USARTClass*)(obj))
-
 void stm32_usartEnable(volatile STM32USARTRegs *usart);
 void stm32_usartDisable(volatile STM32USARTRegs *usart);
 
@@ -29,6 +18,21 @@ void stm32_usartSetStopBits(volatile STM32USARTRegs *usart, SerialPortStopBits b
 uint8_t stm32_usartReadChar(volatile STM32USARTRegs *usart);
 void stm32_usartWriteChar(volatile STM32USARTRegs *usart, uint8_t chr);
 
+#ifdef USE_CLASSES
+
+typedef struct STM32USARTClass STM32USARTClass;
+
+struct STM32USARTClass {
+	SerialPortClass parent;
+	volatile STM32USARTRegs *usart;
+	QueueClass txQueue;
+	QueueClass rxQueue;
+};
+
+#define STM32_USART_CLASS(obj) ((STM32USARTClass*)(obj))
+
 STM32USARTClass *stm32_usartClassInit(STM32USARTClass *usart, volatile STM32USARTRegs *usartRegs, int txQueueSize, int rxQueueSize);
+
+#endif
 
 #endif

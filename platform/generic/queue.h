@@ -1,6 +1,8 @@
 #ifndef __QUEUE_H__
 #define __QUEUE_H__
 
+#ifdef USE_CLASSES
+
 typedef struct QueueClass QueueClass;
 
 #include <stdint.h>
@@ -31,5 +33,7 @@ int queueWriteTimeout(QueueClass *queue, const void *data, int count, uint64_t t
 
 int queueRead(QueueClass *queue, void *buffer, int count);
 int queueReadTimeout(QueueClass *queue, void *buffer, int count, uint64_t timeout);
+
+#endif
 
 #endif

@@ -1,8 +1,14 @@
 #include <stm32.h>
 
+//#define DEBUG
+
 #ifdef OTG_FS_DEVICE_BASE
 
+#ifdef USE_CLASSES
+
+#ifdef DEBUG
 extern STM32USARTClass serialPort;
+#endif
 
 static STM32USBDriverClass *otgFSDriver;
 
@@ -18,13 +24,17 @@ static uint16_t STM32USBDriverClass_allocFIFO(STM32USBDriverClass *usb, uint16_t
 
 static void STM32USBDriverClass_setAddress(USBDriverClass *_usb, uint8_t addr) {
 	STM32USBDriverClass *usb = STM32_USB_DRIVER_CLASS(_usb);
+#ifdef DEBUG
 	ioStreamPrintf(&serialPort, "setAddress(%i)\r\n", addr);
+#endif
 	usb->deviceRegs->DCFG = (usb->deviceRegs->DCFG & ~OTG_FS_DEVICE_FS_DCFG_DAD_MASK) | ((uint32_t)addr << OTG_FS_DEVICE_FS_DCFG_DAD_OFFSET);
 }
 
 static uint8_t STM32USBDriverClass_epSetup(USBDriverClass *_usb, uint8_t ep, USBEndpointType type, uint16_t bufSize, USBEndpointCallback callback, void *arg) {
 	STM32USBDriverClass *usb = STM32_USB_DRIVER_CLASS(_usb);
+#ifdef DEBUG
 	ioStreamPrintf(&serialPort, "epSetup(%i)\r\n", ep);
+#endif
 	uint8_t dir = ep & 0x80;
 	ep &= ~0x80;
 	if (ep >= STM32USB_MAX_EP_COUNT) return 0;
@@ -145,7 +155,9 @@ int STM32USBDriverClass_epRead(USBDriverClass *_usb, uint8_t ep, void *buffer, i
 
 void STM32USBDriverClass_epStartRx(USBDriverClass *_usb, uint8_t ep) {
 	STM32USBDriverClass *usb = STM32_USB_DRIVER_CLASS(_usb);
+#ifdef DEBUG
 	ioStreamPrintf(&serialPort, "epStartRx(%i)\r\n", ep);
+#endif
 	uint8_t dir = ep & 0x80;
 	if (dir) return;
 	ep &= ~0x80;
@@ -241,18 +253,26 @@ static void STM32USBDriverClass_handleReset(STM32USBDriverClass *usb) {
 
 static void STM32USBDriver_handleInterrupt(STM32USBDriverClass *usb) {
 	uint32_t gintsts = usb->globalRegs->GINTSTS;
+#ifdef DEBUG
 	ioStreamPrintf(&serialPort, "INTERRUPT(%x, %x)\r\n", gintsts, usb->deviceRegs->DOEP[0].INT);
+#endif
 	if (gintsts & OTG_FS_GLOBAL_FS_GINTSTS_ENUMDNE) {
+#ifdef DEBUG
 		ioStreamPrintf(&serialPort, "ENUMDNE\r\n");
+#endif
 		STM32USBDriverClass_handleReset(usb);
 		return;
 	}
 	if (gintsts & OTG_FS_GLOBAL_FS_GINTSTS_RXFLVL) {
+#ifdef DEBUG
 		ioStreamPrintf(&serialPort, "RXFLVL\r\n");
+#endif
 		uint32_t rxstsp = usb->globalRegs->GRXSTSP;
 		uint32_t pktsts = (rxstsp & OTG_FS_GLOBAL_FS_GRXSTSR_Device_PKTSTS_MASK) >> OTG_FS_GLOBAL_FS_GRXSTSR_Device_PKTSTS_OFFSET;
 		if ((pktsts != STM32USB_PKTSTS_OUT_COMPLETED) && (pktsts != STM32USB_PKTSTS_SETUP_COMPLETED)) return;
+#ifdef DEBUG
 		ioStreamPrintf(&serialPort, "RXFLVL ok\r\n");
+#endif
 		uint32_t count = (rxstsp & OTG_FS_GLOBAL_FS_GRXSTSR_Device_BCNT_MASK) >> OTG_FS_GLOBAL_FS_GRXSTSR_Device_BCNT_OFFSET;
 		uint32_t ep = (rxstsp & OTG_FS_GLOBAL_FS_GRXSTSR_Device_EPNUM_MASK) >> OTG_FS_GLOBAL_FS_GRXSTSR_Device_EPNUM_OFFSET;
 		uint8_t setup = pktsts == STM32USB_PKTSTS_SETUP_COMPLETED;
@@ -274,13 +294,17 @@ static void STM32USBDriver_handleInterrupt(STM32USBDriverClass *usb) {
 		}
 	}
 	if (gintsts & OTG_FS_GLOBAL_FS_GINTSTS_USBSUSP) {
+#ifdef DEBUG
 		ioStreamPrintf(&serialPort, "SUSP\r\n");
+#endif
 		usb->globalRegs->GINTSTS = OTG_FS_GLOBAL_FS_GINTSTS_USBSUSP;
 		usb->globalRegs->GINTMSK = OTG_FS_GLOBAL_FS_GINTMSK_ENUMDNEM | OTG_FS_GLOBAL_FS_GINTMSK_WUIM;
 		usbDriverHandleSuspend(usb);
 	}
 	if (gintsts & OTG_FS_GLOBAL_FS_GINTSTS_WKUPINT) {
+#ifdef DEBUG
 		ioStreamPrintf(&serialPort, "WKUP\r\n");
+#endif
 		usb->globalRegs->GINTSTS = OTG_FS_GLOBAL_FS_GINTSTS_WKUPINT;
 		usb->globalRegs->GINTMSK = OTG_FS_GLOBAL_FS_GINTMSK_ENUMDNEM | OTG_FS_GLOBAL_FS_GINTMSK_RXFLVLM | OTG_FS_GLOBAL_FS_GINTMSK_IEPINT |
 			OTG_FS_GLOBAL_FS_GINTMSK_USBSUSPM;
@@ -299,5 +323,7 @@ ISR(OTG_FS_WKUP_vect) {
 		STM32USBDriver_handleInterrupt(otgFSDriver);
 	}
 }
+
+#endif
 
 #endif

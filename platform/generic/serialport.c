@@ -1,5 +1,7 @@
 #include <serialport.h>
 
+#ifdef USE_CLASSES
+
 void serialPortSetup(void *port, uint32_t baudrate, SerialPortFlowControl flowControl, SerialPortParity parity,
 		SerialPortDataBits dataBits, SerialPortStopBits stopBits) {
 	serialPortSetBaudrate(port, baudrate);
@@ -8,3 +10,5 @@ void serialPortSetup(void *port, uint32_t baudrate, SerialPortFlowControl flowCo
 	serialPortSetDataBits(port, dataBits);
 	serialPortSetStopBits(port, stopBits);
 }
+
+#endif

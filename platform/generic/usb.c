@@ -1,6 +1,8 @@
 #include <stdlib.h>
 #include <usb.h>
 
+#ifdef USE_CLASSES
+
 #define usbDriverCallHook(usb, hook, ...) do { \
 		USBDriverHooks *hooks = usb->hooks; \
 		while (hooks) { \
@@ -274,3 +276,5 @@ void usbDriverRegisterHooks(void *obj, USBDriverHooks *hooks) {
 	hooks->next = usb->hooks;
 	usb->hooks = hooks;
 }
+
+#endif

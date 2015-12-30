@@ -2,6 +2,8 @@
 #include <string.h>
 #include <queue.h>
 
+#ifdef USE_CLASSES
+
 QueueClass *queueInit(QueueClass *queue, int elementSize, int elementMaxCount) {
 	mutexInit(&queue->writeMutex);
 	mutexInit(&queue->readMutex);
@@ -120,3 +122,5 @@ int queueReadTimeout(QueueClass *queue, void *buffer, int count, uint64_t timeou
 	}
 	return i;
 }
+
+#endif

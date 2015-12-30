@@ -1,6 +1,8 @@
 #include <stdlib.h>
 #include <usb-cdc.h>
 
+#ifdef USE_CLASSES
+
 enum {
 	SEND_ENCAPSULATED_COMMAND = 0,
 	GET_ENCAPSULATED_RESPONSE,
@@ -124,3 +126,5 @@ USBCDCClass *usbCdcClassInit(USBCDCClass *usbCdc, USBDriverClass *usb, int txBuf
 	usbDriverRegisterHooks(usb, hooks);
 	return usbCdc;
 }
+
+#endif

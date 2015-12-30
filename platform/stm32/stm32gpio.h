@@ -22,14 +22,6 @@
 #define STM32_GPIO14 (1 << 14)
 #define STM32_GPIO15 (1 << 15)
 
-typedef struct STM32GPIOClass {
-	GPIOClass parent;
-	volatile STM32GPIORegs *port;
-	uint16_t mask;
-} STM32GPIOClass;
-
-#define STM32_GPIO_CLASS(obj) ((STM32GPIOClass*)(obj))
-
 void stm32_gpioPortEnable(volatile STM32GPIORegs *port);
 void stm32_gpioPortDisable(volatile STM32GPIORegs *port);
 
@@ -47,6 +39,18 @@ void stm32_gpioPortSetupAltFn(volatile STM32GPIORegs *port, uint16_t mask, GPIOD
 #define stm32_gpioPortToggleBits(port, mask) (port)->ODR ^= mask
 uint8_t stm32_gpioPortAttachInterrupt(volatile STM32GPIORegs *port, uint8_t bit, GPIOInterruptMode mode, GPIOInterruptHandler handler, void *arg);
 
+#ifdef USE_CLASSES
+
+typedef struct STM32GPIOClass {
+	GPIOClass parent;
+	volatile STM32GPIORegs *port;
+	uint16_t mask;
+} STM32GPIOClass;
+
+#define STM32_GPIO_CLASS(obj) ((STM32GPIOClass*)(obj))
+
 STM32GPIOClass *stm32_gpioClassInit(STM32GPIOClass *obj, volatile STM32GPIORegs *port, uint16_t mask);
+
+#endif
 
 #endif

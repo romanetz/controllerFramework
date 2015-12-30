@@ -5,6 +5,8 @@
 
 #define USB_MAX_EP0_PACKET_SIZE 128
 
+#ifdef USE_CLASSES
+
 typedef struct USBDriverClass USBDriverClass;
 
 typedef enum USBEndpointType {
@@ -103,5 +105,7 @@ void usbDriverRegisterHooks(void *obj, USBDriverHooks *hooks);
 void usbDriverEp0Write(USBDriverClass *usb, const void *data, int count);
 void usbDriverEpWriteZLP(USBDriverClass *usb, uint8_t ep);
 void usbDriverEp0WriteZLP(USBDriverClass *usb);
+
+#endif
 
 #endif

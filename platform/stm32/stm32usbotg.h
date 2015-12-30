@@ -8,6 +8,8 @@
 #include <usb.h>
 #include <stm32usbotgregs.h>
 
+#ifdef USE_CLASSES
+
 typedef struct STM32USBDriverClass STM32USBDriverClass;
 
 typedef struct STM32USBEpInfo {
@@ -33,6 +35,8 @@ struct STM32USBDriverClass {
 
 STM32USBDriverClass *stm32_usbDriverClassInit(STM32USBDriverClass *usb, const USBDeviceDescriptor *deviceDescr, const USBConfigDescriptor **configs,
 	const USBStringDescriptor **strings, int stringCount);
+
+#endif
 
 #endif
 

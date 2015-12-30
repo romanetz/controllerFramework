@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <iostream.h>
 
+#ifdef USE_CLASSES
+
 int ioStreamVPrintfTimeout(void *stream, const char *fmt, va_list *arg, uint64_t timeout) {
 	char *str;
 	int r = vasprintf(&str, fmt, *arg);
@@ -17,3 +19,5 @@ int ioStreamPrintfTimeout(void *stream, uint64_t timeout, const char *fmt, ...) 
 	va_end(arg);
 	return r;
 }
+
+#endif
