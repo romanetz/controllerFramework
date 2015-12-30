@@ -1,43 +1,51 @@
-PLATFORM_NAME = $(strip $(foreach PLATFORM_NAME, $(wildcard $(BASE_DIR)/platform/*), $(findstring $(notdir $(PLATFORM_NAME)), $(PLATFORM))))
-PLATFORM_DIR = $(BASE_DIR)/platform/$(PLATFORM_NAME)
-
 BUILD_DIR ?= $(PROJECT_DIR)/build
+
+PLATFORM_NAME = $(strip $(foreach PLATFORM_NAME, $(wildcard $(FRAMEWORK_DIR)/platform/*), $(findstring $(notdir $(PLATFORM_NAME)), $(PLATFORM))))
+ifeq ($(PLATFORM_NAME),)
+$(error Could not determine desired platform)
+endif
+PLATFORM_DIR = $(FRAMEWORK_DIR)/platform/$(PLATFORM_NAME)
+
+CFLAGS ?= -Wall -Werror -O2 -ggdb
 
 CC = $(TARGET)gcc
 LD = $(TARGET)gcc
-SIZE = $(TARGET)size
+STRIP = $(TARGET)strip
 OBJCOPY = $(TARGET)objcopy
+SIZE = $(TARGET)size
 Q ?= @
 
-SOURCES += $(wildcard $(BASE_DIR)/platform/common/*.cpp)
-HEADERS += $(BUILD_DIR)/platform.h
-INCLUDE_PATH += $(BASE_DIR)/platform/common $(BUILD_DIR)
+INCLUDE_PATH += $(BUILD_DIR)/include
 
-CFLAGS += -fno-exceptions -fno-rtti -std=c++11
-CFLAGS += $(foreach PATH, $(INCLUDE_PATH), -I$(PATH))
+LIBRARIES_DIR = $(FRAMEWORK_DIR)/libraries
+include $(LIBRARIES_DIR)/*/rules.mk
 
-OBJECTS += $(addprefix $(BUILD_DIR)/obj/, $(notdir $(SOURCES:.cpp=.o)))
+CFLAGS += $(addprefix -I, $(INCLUDE_PATH))
 
-VPATH = $(sort $(dir $(SOURCES)))
+COBJECTS = $(addprefix $(BUILD_DIR)/obj/, $(notdir $(CSOURCES:.c=.o)))
+OBJECTS = $(COBJECTS)
 
-SOURCES += $(wildcard $(BASE_DIR)/libraries/*/*.cpp)
-INCLUDE_PATH += $(wildcard $(BASE_DIR)/libraries/*)
+HEADERS += $(BUILD_DIR)/include/platform.h
 
+VPATH = $(sort $(dir $(CSOURCES)))
+
+include $(FRAMEWORK_DIR)/platform/generic/rules.mk
 include $(PLATFORM_DIR)/rules.mk
-include $(BASE_DIR)/platform/common/rules.mk
 
 $(BUILD_DIR):
 	@echo "Creating $(BUILD_DIR) directory..."
+	$(Q)mkdir -p $(BUILD_DIR)/include
 	$(Q)mkdir -p $(BUILD_DIR)/obj
+	$(Q)mkdir -p $(BUILD_DIR)/deps
 
-$(BUILD_DIR)/platform.h: Makefile
-	@echo "Creating $*.h..."
+$(BUILD_DIR)/include/platform.h: Makefile
+	@echo "Generating $*.h..."
 	$(Q)echo -e "#ifndef __PLATFORM_H__\n#define __PLATFORM_H__\n\n#include <$(PLATFORM_NAME).h>\n\n#endif\n" > $@
 
-$(OBJECTS) : $(BUILD_DIR)/obj/%.o : %.cpp $(HEADERS) Makefile
-	@echo "Compiling $*.cpp..."
+$(COBJECTS): $(BUILD_DIR)/obj/%.o: %.c $(HEADERS) Makefile
+	@echo "Compiling $*.c..."
 	$(Q)$(CC) -c $(CFLAGS) -o $@ $<
-	$(Q)$(CC) -MM $(CFLAGS) $< | sed "s/$*\.o/$(shell echo $@ | sed -e 's/[\/&]/\\&/g')/" > $(BUILD_DIR)/obj/$*.d
+	$(Q)$(CC) -MM $(CFLAGS) $< | sed "s/$*\.o/$(shell echo $@ | sed -e 's/[\/&]/\\&/g')/" > $(BUILD_DIR)/deps/$*.d
 
 clean:
 	rm -rfv $(BUILD_DIR)
@@ -46,4 +54,4 @@ clean:
 
 .SECONDARY:
 
--include $(BUILD_DIR)/obj/*.d
+-include $(BUILD_DIR)/deps/*.d

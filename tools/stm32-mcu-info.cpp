@@ -29,8 +29,11 @@ int main(int argc, char **argv) {
 		return 0;
 	}
 	int exitCode = 0;
-	char *catalogFileName = strdup_printf("%s/../metadata/stm32_catalog.json", dirname(argv[0]));
 	char *mcuModel = argv[1];
+	for (int i = 0; mcuModel[i]; i++) {
+		mcuModel[i] = tolower(mcuModel[i]);
+	}
+	char *catalogFileName = strdup_printf("%s/../metadata/stm32%c%c_catalog.json", dirname(argv[0]), mcuModel[5], mcuModel[6]);
 	for (int i = 0; mcuModel[i]; i++) {
 		mcuModel[i] = toupper(mcuModel[i]);
 	}
@@ -51,9 +54,9 @@ int main(int argc, char **argv) {
 			partNumberName = name;
 		} else if (strcmp(header, "FLASH Size (Prog)(kB)") == 0) {
 			flashSizeName = name;
-		} if (strcmp(header, "Internal RAM Size(kB)") == 0) {
+		} else if (strcmp(header, "Internal RAM Size(kB)") == 0) {
 			ramSizeName = name;
-		} if (strcmp(header, "Core") == 0) {
+		} else if (strcmp(header, "Core") == 0) {
 			coreName = name;
 		}
 	}

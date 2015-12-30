@@ -1,18 +1,12 @@
 #ifndef __LINUX_H__
+#define __LINUX_H__
 
 #include <stdio.h>
-#include <stdint.h>
 #include <stdlib.h>
-#include <termios.h>
-#include <unistd.h>
-#include <sys/fcntl.h>
-#include <time.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <stropts.h>
-#include <sys/ioctl.h>
+#include <stdint.h>
+#include <string.h>
+#include <pthread.h>
 
-#include <linux-filechannel.h>
-#include <linux-serialport.h>
+#include <posix_mutex.h>
 
 #endif

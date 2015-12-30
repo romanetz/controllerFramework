@@ -1,18 +1,15 @@
 TARGET ?=
 
-SOURCES += $(wildcard $(PLATFORM_DIR)/*.cpp)
 INCLUDE_PATH += $(PLATFORM_DIR)
+CSOURCES += $(wildcard $(PLATFORM_DIR)/*.c)
 
-LFLAGS += -lstdc++ -lpthread
+BINARIES += $(BUILD_DIR)/$(PROJECT_NAME)
 
-OUTPUT_FILES = $(BUILD_DIR)/$(PROJECT_NAME).elf
+LFLAGS += -lpthread
 
-$(BUILD_DIR)/%.elf: $(OBJECTS) Makefile
-	@echo "Linking $(notdir $@)..."
-	$(Q)$(LD) $(CFLAGS) -o $@ $(OBJECTS) $(LFLAGS)
+all: $(BUILD_DIR) $(BINARIES)
+	@echo "Done"
 
-all: $(BUILD_DIR) $(OUTPUT_FILES)
-	$(Q)$(SIZE) $(BUILD_DIR)/$(PROJECT_NAME).elf
-
-run: $(BUILD_DIR)/$(PROJECT_NAME).elf
-	$(BUILD_DIR)/$(PROJECT_NAME).elf
+$(BUILD_DIR)/$(PROJECT_NAME): $(OBJECTS) Makefile
+	@echo "Linking $@..."
+	$(Q)$(LD) -o $@ $(OBJECTS) $(LFLAGS)

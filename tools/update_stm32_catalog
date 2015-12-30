@@ -1,6 +1,20 @@
 #!/bin/sh
-URL=http://www.st.com/stonline/stappl/productcatalog/jsp/jsonDataForL3.jsp?subclassId=1169
+function download {
+	URL=$1
+	FILE=$2
+	echo "Downloading $URL to $FILE..."
+	curl -o $FILE $URL
+}
+
 BASE_DIR=$(dirname $0)/..
-FILE=$BASE_DIR/metadata/stm32_catalog.json
-echo "Downloading $URL to $FILE..."
-curl -o $FILE $URL
+
+download "http://www.st.com/stonline/stappl/productcatalog/jsp/jsonDataForL3.jsp?subclassId=1169" "$BASE_DIR/metadata/stm32_catalog.json"
+download "http://www.st.com/stonline/stappl/productcatalog/jsp/jsonDataForL3.jsp?subclassId=1169&seriesId=1574" "$BASE_DIR/metadata/stm32f0_catalog.json"
+download "http://www.st.com/stonline/stappl/productcatalog/jsp/jsonDataForL3.jsp?subclassId=1169&seriesId=1031" "$BASE_DIR/metadata/stm32f1_catalog.json"
+download "http://www.st.com/stonline/stappl/productcatalog/jsp/jsonDataForL3.jsp?subclassId=1169&seriesId=1575" "$BASE_DIR/metadata/stm32f2_catalog.json"
+download "http://www.st.com/stonline/stappl/productcatalog/jsp/jsonDataForL3.jsp?subclassId=1169&seriesId=1576" "$BASE_DIR/metadata/stm32f3_catalog.json"
+download "http://www.st.com/stonline/stappl/productcatalog/jsp/jsonDataForL3.jsp?subclassId=1169&seriesId=1577" "$BASE_DIR/metadata/stm32f4_catalog.json"
+download "http://www.st.com/stonline/stappl/productcatalog/jsp/jsonDataForL3.jsp?subclassId=1169&seriesId=1858" "$BASE_DIR/metadata/stm32f7_catalog.json"
+download "http://www.st.com/stonline/stappl/productcatalog/jsp/jsonDataForL3.jsp?subclassId=1169&seriesId=1817" "$BASE_DIR/metadata/stm32l0_catalog.json"
+download "http://www.st.com/stonline/stappl/productcatalog/jsp/jsonDataForL3.jsp?subclassId=1169&seriesId=1295" "$BASE_DIR/metadata/stm32l1_catalog.json"
+download "http://www.st.com/stonline/stappl/productcatalog/jsp/jsonDataForL3.jsp?subclassId=1169&seriesId=1580" "$BASE_DIR/metadata/stm32l4_catalog.json"
