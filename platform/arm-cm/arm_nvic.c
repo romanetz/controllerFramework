@@ -1,6 +1,6 @@
 #include <arm-cm.h>
 
-uint8_t nvicIRQEnabled(uint8_t index) {
+BOOL nvicIRQEnabled(uint8_t index) {
 	return (NVIC_REGS->ISER[index / 32] & (1 << (index % 32))) != 0;
 }
 
@@ -12,7 +12,7 @@ void nvicDisableIRQ(uint8_t index) {
 	NVIC_REGS->ICER[index / 32] = 1 << (index % 32);
 }
 
-uint8_t nvicIRQPending(uint8_t index) {
+BOOL nvicIRQPending(uint8_t index) {
 	return (NVIC_REGS->ISPR[index / 32] & (1 << (index % 32))) == 0;
 }
 

@@ -16,8 +16,8 @@ typedef enum STM32ClockSource {
 
 void stm32_rccEnableClockSource(STM32ClockSource src);
 void stm32_rccDisableClockSource(STM32ClockSource src);
-uint8_t stm32_rccWaitClockSourceReady(STM32ClockSource src);
-uint8_t stm32_rccWaitClockSourceReadyTimeout(STM32ClockSource src, uint32_t timeout);
+BOOL stm32_rccWaitClockSourceReady(STM32ClockSource src);
+BOOL stm32_rccWaitClockSourceReadyTimeout(STM32ClockSource src, uint32_t timeout);
 void stm32_rccSelectClockSource(STM32ClockSource src);
 void stm32_rccWaitClockSourceSelected(STM32ClockSource src);
 void stm32_rccSetAHBPrescaler(STM32AHBPrescaler psc);
@@ -35,13 +35,13 @@ uint32_t stm32_rccADCFrequency(void);
 #endif
 
 #ifndef STM32F1
-uint8_t stm32_rccLowlevelSetupPLL(STM32ClockSource src, uint32_t pllm, uint32_t plln, uint32_t pllp, uint32_t pllq);
+BOOL stm32_rccLowlevelSetupPLL(STM32ClockSource src, uint32_t pllm, uint32_t plln, uint32_t pllp, uint32_t pllq);
 #endif
-uint8_t stm32_rccSetupPLL(STM32ClockSource src, uint32_t inClk, uint32_t outClk);
+BOOL stm32_rccSetupPLL(STM32ClockSource src, uint32_t inClk, uint32_t outClk);
 
 void stm32_rccUseHSI(void);
-uint8_t stm32_rccUseHSE(uint32_t freq);
-uint8_t stm32_rccUsePLL(STM32ClockSource src, uint32_t srcFreq, uint32_t pllFreq);
+BOOL stm32_rccUseHSE(uint32_t freq);
+BOOL stm32_rccUsePLL(STM32ClockSource src, uint32_t srcFreq, uint32_t pllFreq);
 
 void stm32_rccPeriphClockEnable(volatile void *periph);
 void stm32_rccPeriphClockDisable(volatile void *periph);

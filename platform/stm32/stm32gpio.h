@@ -37,7 +37,7 @@ void stm32_gpioPortSetupAltFn(volatile STM32GPIORegs *port, uint16_t mask, GPIOD
 #define stm32_gpioPortSetBits(port, mask) (port)->ODR |= mask
 #define stm32_gpioPortClearBits(port, mask) (port)->ODR &= ~(mask)
 #define stm32_gpioPortToggleBits(port, mask) (port)->ODR ^= mask
-uint8_t stm32_gpioPortAttachInterrupt(volatile STM32GPIORegs *port, uint8_t bit, GPIOInterruptMode mode, GPIOInterruptHandler handler, void *arg);
+BOOL stm32_gpioPortAttachInterrupt(volatile STM32GPIORegs *port, uint8_t bit, GPIOInterruptMode mode, GPIOInterruptHandler handler, void *arg);
 
 #ifdef USE_CLASSES
 

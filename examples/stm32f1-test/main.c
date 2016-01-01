@@ -4,8 +4,8 @@
 
 STM32GPIOClass led1, led2;
 STM32USARTClass usart1;
+STM32I2CClass i2c1;
 STM32USBDriverClass usbDriver;
-USBCDCClass usbCdc;
 
 void initPeripheral() {
 	stm32_rccUsePLL(STM32_CLOCKSOURCE_HSE, 8000000, 72000000);
@@ -13,13 +13,18 @@ void initPeripheral() {
 	stm32_gpioPortEnable(GPIOA);
 	stm32_gpioPortSetup(GPIOA, STM32_GPIO9, GPIO_MODE_ALTFN, GPIO_DRIVER_PUSHPULL, GPIO_PUPD_NONE);
 	stm32_gpioPortSetup(GPIOA, STM32_GPIO10, GPIO_MODE_INPUT, GPIO_DRIVER_NONE, GPIO_PUPD_PULLUP);
+	stm32_gpioPortEnable(GPIOB);
+	stm32_gpioPortSetup(GPIOB, STM32_GPIO6 | STM32_GPIO7, GPIO_MODE_ALTFN, GPIO_DRIVER_OPENDRAIN, GPIO_PUPD_PULLUP);
 	stm32_gpioPortEnable(GPIOE);
 	stm32_gpioPortSetup(GPIOE, STM32_GPIO0 | STM32_GPIO2, GPIO_MODE_OUTPUT, GPIO_DRIVER_PUSHPULL, GPIO_PUPD_NONE);
 	stm32_gpioClassInit(&led1, GPIOE, STM32_GPIO0);
 	stm32_gpioClassInit(&led2, GPIOE, STM32_GPIO2);
 	stm32_usartClassInit(&usart1, USART1, 64, 64);
+	stm32_i2cClassInit(&i2c1, I2C1, 400000);
 	stm32_usbDriverClassInit(&usbDriver, &usbDeviceDescr, usbConfigs, usbStrings, 3);
 }
+
+USBCDCClass usbCdc;
 
 int main(void) {
 	initPeripheral();
@@ -30,8 +35,11 @@ int main(void) {
 		gpioToggle(&led1);
 		usleep(250000);
 		gpioToggle(&led2);
-		ioStreamPrintf(&usart1, "Test: %i\r\n", i++);
-		ioStreamPrintf(&usbCdc, "Test: %i\r\n", i++);
+		uint8_t reg = 0x75;
+		uint8_t value = 0x00;
+		i2cMasterWriteReadTimeout(&i2c1, 0xD0, &reg, sizeof(reg), &value, sizeof(value), 10000);
+		ioStreamPrintf(&usart1, "Test: %i, value: %02X\r\n", i++, value);
+		//ioStreamPrintf(&usbCdc, "Test: %i, value: %02X\r\n", i++, value);
 	}
 	return 0;
 }

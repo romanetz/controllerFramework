@@ -1,6 +1,8 @@
 #ifndef __GPIO_H__
 #define __GPIO_H__
 
+#include <generic.h>
+
 typedef enum GPIOMode {
 	GPIO_MODE_INPUT = 0,
 	GPIO_MODE_ANALOG,
@@ -42,8 +44,8 @@ typedef void (*GPIOSetupFunc)(GPIOClass *gpio, GPIOMode mode, GPIODriverType dri
 typedef void (*GPIOSetFunc)(GPIOClass *gpio);
 typedef void (*GPIOClearFunc)(GPIOClass *gpio);
 typedef void (*GPIOToggleFunc)(GPIOClass *gpio);
-typedef uint8_t (*GPIOReadFunc)(GPIOClass *gpio);
-typedef uint8_t (*GPIOAttachInterruptFunc)(GPIOClass *gpio, GPIOInterruptMode mode, GPIOInterruptHandler handler, void *arg);
+typedef BOOL (*GPIOReadFunc)(GPIOClass *gpio);
+typedef BOOL (*GPIOAttachInterruptFunc)(GPIOClass *gpio, GPIOInterruptMode mode, GPIOInterruptHandler handler, void *arg);
 
 struct GPIOClass {
 	GPIOSetupFunc setup;

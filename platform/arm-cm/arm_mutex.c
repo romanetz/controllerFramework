@@ -18,7 +18,7 @@ inline uint32_t __strex(volatile uint32_t *addr, uint32_t value) {
 }
 #endif
 
-static uint8_t tryLockMutex(volatile uint32_t *mutex) {
+static BOOL tryLockMutex(volatile uint32_t *mutex) {
 	uint32_t r = __ldrex(mutex);
 	if (r == 0) {
 		r = __strex(mutex, 1);
@@ -35,11 +35,11 @@ void mutexDestroy(Mutex *mutex) {
 	(void)mutex;
 }
 
-uint8_t mutexLockTimeout(Mutex *mutex, uint64_t timeout) {
+BOOL mutexLockTimeout(Mutex *mutex, timestamp_t timeout) {
 	do {
-		if (tryLockMutex(&mutex->state)) return 1;
+		if (tryLockMutex(&mutex->state)) return TRUE;
 	} while (timeout > 0);
-	return 0;
+	return FALSE;
 }
 
 void mutexLock(Mutex *mutex) {

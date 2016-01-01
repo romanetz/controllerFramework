@@ -5,7 +5,7 @@
 
 typedef struct QueueClass QueueClass;
 
-#include <stdint.h>
+#include <generic.h>
 #include <mutex.h>
 
 struct QueueClass {
@@ -29,10 +29,10 @@ void queueClear(QueueClass *queue);
 void queueResize(QueueClass *queue, int newSize);
 
 int queueWrite(QueueClass *queue, const void *data, int count);
-int queueWriteTimeout(QueueClass *queue, const void *data, int count, uint64_t timeout);
+int queueWriteTimeout(QueueClass *queue, const void *data, int count, timestamp_t timeout);
 
 int queueRead(QueueClass *queue, void *buffer, int count);
-int queueReadTimeout(QueueClass *queue, void *buffer, int count, uint64_t timeout);
+int queueReadTimeout(QueueClass *queue, void *buffer, int count, timestamp_t timeout);
 
 #endif
 

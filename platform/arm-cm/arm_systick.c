@@ -1,7 +1,7 @@
 #include <platform.h>
 
 static uint32_t sysTickFrequency;
-static volatile uint64_t sysTickCounter;
+static volatile timestamp_t sysTickCounter;
 
 ISR(SYSTICK_vect) {
 	sysTickCounter++;
@@ -65,17 +65,17 @@ uint32_t sysTickGetFrequency(void) {
 	return sysTickFrequency;
 }
 
-uint64_t sysTickTimestamp(void) {
+timestamp_t sysTickTimestamp(void) {
 	return sysTickCounter * 1000000 / sysTickFrequency + (SYSTICK->LOAD - SYSTICK->VAL) / ((SYSTICK->LOAD + 1) / sysTickFrequency);
 }
 
-void sysTickDelay(uint64_t time) {
-	uint64_t targetTime = sysTickTimestamp() + time;
+void sysTickDelay(timestamp_t time) {
+	timestamp_t targetTime = sysTickTimestamp() + time;
 	while (sysTickTimestamp() < targetTime) {
 		// Busy loop
 	}
 }
 
-void usleep(uint64_t time) {
+void usleep(timestamp_t time) {
 	sysTickDelay(time);
 }

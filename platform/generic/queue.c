@@ -60,7 +60,7 @@ int queueWrite(QueueClass *queue, const void *data, int count) {
 	return queueWriteTimeout(queue, data, count, -1);
 }
 
-int queueWriteTimeout(QueueClass *queue, const void *data, int count, uint64_t timeout) {
+int queueWriteTimeout(QueueClass *queue, const void *data, int count, timestamp_t timeout) {
 	int i = 0;
 	while (i < count) {
 		if (queue->elementMaxCount == 0) break;
@@ -95,7 +95,7 @@ int queueRead(QueueClass *queue, void *buffer, int count) {
 	return queueWriteTimeout(queue, buffer, count, -1);
 }
 
-int queueReadTimeout(QueueClass *queue, void *buffer, int count, uint64_t timeout) {
+int queueReadTimeout(QueueClass *queue, void *buffer, int count, timestamp_t timeout) {
 	int i = 0;
 	while (i < count) {
 		if (queue->elementMaxCount == 0) break;

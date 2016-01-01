@@ -41,9 +41,9 @@ void sysTickDisableInterrupt(void);
 
 int sysTickSetup(uint32_t freq);
 uint32_t sysTickGetFrequency(void);
-uint64_t sysTickTimestamp(void);
-void sysTickDelay(uint64_t time);
+timestamp_t sysTickTimestamp(void);
+void sysTickDelay(timestamp_t time);
 
-void usleep(uint64_t time);
+void usleep(timestamp_t time);
 
 #endif

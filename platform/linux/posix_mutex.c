@@ -8,7 +8,7 @@ void mutexDestroy(Mutex *mutex) {
 	pthread_mutex_destroy(&mutex->mutex);
 }
 
-uint8_t mutexLockTimeout(Mutex *mutex, uint64_t timeout) {
+BOOL mutexLockTimeout(Mutex *mutex, timestamp_t timeout) {
 	if (timeout == -1) {
 		mutexLock(mutex);
 		return 1;

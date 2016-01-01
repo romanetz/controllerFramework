@@ -1,7 +1,7 @@
 #ifndef __IO_STREAM_H__
 #define __IO_STREAM_H__
 
-#include <stdint.h>
+#include <generic.h>
 #include <stdarg.h>
 #include <string.h>
 
@@ -9,8 +9,8 @@
 
 typedef struct IOStreamClass IOStreamClass;
 
-typedef int (*IOStreamWriteTimeoutFunc)(IOStreamClass *stream, const void *data, int len, uint64_t timeout);
-typedef int (*IOStreamReadTimeoutFunc)(IOStreamClass *stream, void *buffer, int len, uint64_t timeout);
+typedef int (*IOStreamWriteTimeoutFunc)(IOStreamClass *stream, const void *data, int len, timestamp_t timeout);
+typedef int (*IOStreamReadTimeoutFunc)(IOStreamClass *stream, void *buffer, int len, timestamp_t timeout);
 typedef void (*IOStreamFlushFunc)(IOStreamClass *stream);
 typedef void (*IOStreamCloseFunc)(IOStreamClass *stream);
 
@@ -33,7 +33,7 @@ struct IOStreamClass {
 #define ioStreamWriteStringTimeout(stream, string, timeout) ioStreamWriteTimeout(stream, string, strlen(string), timeout)
 #define ioStreamWriteString(stream, string) ioStreamWrite(stream, string, strlen(string))
 
-int ioStreamVPrintfTimeout(void *stream, const char *fmt, va_list *arg, uint64_t timeout);
+int ioStreamVPrintfTimeout(void *stream, const char *fmt, va_list *arg, timestamp_t timeout);
 #define ioStreamVPrintf(stream, fmt, arg) ioStreamPrintfTimeout(stream, fmt, arg, -1)
 int ioStreamPrintfTimeout(void *stream, uint64_t timeout, const char *fmt, ...);
 #define ioStreamPrintf(stream, ...) ioStreamPrintfTimeout(stream, -1, __VA_ARGS__)

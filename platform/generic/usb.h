@@ -1,6 +1,7 @@
 #ifndef __USB_H__
 #define __USB_H__
 
+#include <generic.h>
 #include <usb-standard.h>
 
 #define USB_MAX_EP0_PACKET_SIZE 128
@@ -30,7 +31,7 @@ typedef void (*USBDriverSuspendHookFunc)(USBDriverClass *usb, void *arg);
 typedef void (*USBDriverResumeHookFunc)(USBDriverClass *usb, void *arg);
 typedef void (*USBDriverSetAddressHook)(USBDriverClass *usb, uint8_t addr, void *arg);
 typedef void (*USBDriverSetConfigHookFunc)(USBDriverClass *usb, const USBConfigDescriptor *config, void *arg);
-typedef uint8_t (*USBDriverSetupHookFunc)(USBDriverClass *usb, USBSetupRequest *rq, uint8_t *data, uint16_t dataLen, void *arg);
+typedef BOOL (*USBDriverSetupHookFunc)(USBDriverClass *usb, USBSetupRequest *rq, uint8_t *data, uint16_t dataLen, void *arg);
 
 typedef struct USBDriverHooks USBDriverHooks;
 
@@ -46,14 +47,14 @@ typedef struct USBDriverHooks {
 } USBDriverHooks;
 
 typedef void (*USBDriverClassSetAddressFunc)(USBDriverClass *usb, uint8_t addr);
-typedef uint8_t (*USBDriverClassEpSetupFunc)(USBDriverClass *usb, uint8_t ep, USBEndpointType type, uint16_t bufSize, USBEndpointCallback callback, void *arg);
+typedef BOOL (*USBDriverClassEpSetupFunc)(USBDriverClass *usb, uint8_t ep, USBEndpointType type, uint16_t bufSize, USBEndpointCallback callback, void *arg);
 typedef void (*USBDriverClassEpStallFunc)(USBDriverClass *usb, uint8_t ep);
 typedef void (*USBDriverClassEpNAKFunc)(USBDriverClass *usb, uint8_t ep);
 typedef int (*USBDriverClassEpWriteFunc)(USBDriverClass *usb, uint8_t ep, const void *data, int count);
 typedef void (*USBDriverClassEpStartTxFunc)(USBDriverClass *usb, uint8_t ep);
 typedef int (*USBDriverClassEpReadFunc)(USBDriverClass *usb, uint8_t ep, void *buffer, int count);
 typedef void (*USBDriverClassEpStartRxFunc)(USBDriverClass *usb, uint8_t ep);
-typedef uint8_t (*USBDriverClassEpReadyFunc)(USBDriverClass *usb, uint8_t ep);
+typedef BOOL (*USBDriverClassEpReadyFunc)(USBDriverClass *usb, uint8_t ep);
 
 struct USBDriverClass {
 	USBDriverClassSetAddressFunc setAddress;
@@ -80,7 +81,7 @@ struct USBDriverClass {
 	uint16_t ep0TxCount;
 	uint16_t status;
 	USBDriverHooks *hooks;
-	uint8_t earlySetAddress; // Must be set to one or zero by the driver implementation
+	BOOL earlySetAddress; // Must be set to one or zero by the driver implementation
 };
 
 #define USB_DRIVER_CLASS(obj) ((USBDriverClass*)(obj))

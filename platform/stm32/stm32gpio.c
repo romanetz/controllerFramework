@@ -162,7 +162,7 @@ static int gpioPortIndex(volatile STM32GPIORegs *gpio) {
 	}
 }
 
-uint8_t stm32_gpioPortAttachInterrupt(volatile STM32GPIORegs *port, uint8_t bit, GPIOInterruptMode mode, GPIOInterruptHandler handler, void *arg) {
+BOOL stm32_gpioPortAttachInterrupt(volatile STM32GPIORegs *port, uint8_t bit, GPIOInterruptMode mode, GPIOInterruptHandler handler, void *arg) {
 	int portIndex = gpioPortIndex(port);
 	if ((portIndex >= 0) && (bit < 16)) {
 		EXTI->IMR &= ~(1 << bit);
@@ -223,9 +223,9 @@ uint8_t stm32_gpioPortAttachInterrupt(volatile STM32GPIORegs *port, uint8_t bit,
 				break;
 		}
 		nvicEnableIRQ(irq);
-		return 1;
+		return TRUE;
 	}
-	return 0;
+	return FALSE;
 }
 
 static void STM32GPIOClass_setup(GPIOClass *gpio, GPIOMode mode, GPIODriverType driver, GPIOPuPd pupd) {
@@ -233,7 +233,7 @@ static void STM32GPIOClass_setup(GPIOClass *gpio, GPIOMode mode, GPIODriverType 
 	stm32_gpioPortSetup(stm32gpio->port, stm32gpio->mask, mode, driver, pupd);
 }
 
-static uint8_t STM32GPIOClass_read(GPIOClass *gpio) {
+static BOOL STM32GPIOClass_read(GPIOClass *gpio) {
 	STM32GPIOClass *stm32gpio = STM32_GPIO_CLASS(gpio);
 	return stm32_gpioPortReadBits(stm32gpio->port, stm32gpio->mask) ? 1 : 0; 
 }
@@ -253,7 +253,7 @@ static void STM32GPIOClass_toggle(GPIOClass *gpio) {
 	stm32_gpioPortToggleBits(stm32gpio->port, stm32gpio->mask);
 }
 
-static uint8_t STM32GPIOClass_attachInterrupt(GPIOClass *gpio, GPIOInterruptMode mode, GPIOInterruptHandler handler, void *arg) {
+static BOOL STM32GPIOClass_attachInterrupt(GPIOClass *gpio, GPIOInterruptMode mode, GPIOInterruptHandler handler, void *arg) {
 	STM32GPIOClass *stm32gpio = STM32_GPIO_CLASS(gpio);
 	int i;
 	for (i = 0; i < 16; i++) {

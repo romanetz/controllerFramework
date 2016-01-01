@@ -183,13 +183,13 @@ void STM32USARTClass_setStopBits(SerialPortClass *serialPort, SerialPortStopBits
 	stm32_usartSetStopBits(STM32_USART_CLASS(serialPort)->usart, bits);
 }
 
-int STM32USARTClass_writeTimeout(IOStreamClass *stream, const void *data, int len, uint64_t timeout) {
+int STM32USARTClass_writeTimeout(IOStreamClass *stream, const void *data, int len, timestamp_t timeout) {
 	int r = queueWriteTimeout(&STM32_USART_CLASS(stream)->txQueue, data, len, timeout);
 	STM32_USART_CLASS(stream)->usart->CR1 |= USART1_CR1_TXEIE;
 	return r;
 }
 
-int STM32USARTClass_readTimeout(IOStreamClass *stream, void *buffer, int len, uint64_t timeout) {
+int STM32USARTClass_readTimeout(IOStreamClass *stream, void *buffer, int len, timestamp_t timeout) {
 	return queueReadTimeout(&STM32_USART_CLASS(stream)->rxQueue, buffer, len, timeout);
 }
 

@@ -46,11 +46,11 @@ void stm32_rccDisableClockSource(STM32ClockSource src) {
 	}
 }
 
-uint8_t stm32_rccWaitClockSourceReady(STM32ClockSource src) {
+BOOL stm32_rccWaitClockSourceReady(STM32ClockSource src) {
 	return stm32_rccWaitClockSourceReadyTimeout(src, 10000);
 }
 
-uint8_t stm32_rccWaitClockSourceReadyTimeout(STM32ClockSource src, uint32_t timeout) {
+BOOL stm32_rccWaitClockSourceReadyTimeout(STM32ClockSource src, uint32_t timeout) {
 	volatile uint32_t *reg = NULL;
 	uint32_t flag = 0;
 	switch (src) {
@@ -173,7 +173,7 @@ void stm32_rccUseHSI(void) {
 #endif
 }
 
-uint8_t stm32_rccUseHSE(uint32_t freq) {
+BOOL stm32_rccUseHSE(uint32_t freq) {
 	stm32_rccEnableClockSource(STM32_CLOCKSOURCE_HSE);
 	if (stm32_rccWaitClockSourceReady(STM32_CLOCKSOURCE_HSE)) {
 		stm32_rccSelectClockSource(STM32_CLOCKSOURCE_HSE);
@@ -195,7 +195,7 @@ uint8_t stm32_rccUseHSE(uint32_t freq) {
 }
 
 #ifdef STM32F1
-uint8_t stm32_rccSetupPLL(STM32ClockSource src, uint32_t inClk, uint32_t outClk) {
+BOOL stm32_rccSetupPLL(STM32ClockSource src, uint32_t inClk, uint32_t outClk) {
 	if (inClk && outClk) {
 		uint32_t cfg = (src == STM32_CLOCKSOURCE_HSE) ? RCC_CFGR_PLLSRC : 0;
 		uint32_t mul = outClk / inClk;
@@ -218,7 +218,7 @@ uint8_t stm32_rccSetupPLL(STM32ClockSource src, uint32_t inClk, uint32_t outClk)
 	return 0;
 }
 #else
-uint8_t stm32_rccLowlevelSetupPLL(STM32ClockSource src, uint32_t pllm, uint32_t plln, uint32_t pllp, uint32_t pllq) {
+BOOL stm32_rccLowlevelSetupPLL(STM32ClockSource src, uint32_t pllm, uint32_t plln, uint32_t pllp, uint32_t pllq) {
 	if ((pllm >= 1) && (pllm <= 31) && (plln >= 1) && (plln <= 511) && (pllp >= 2) && (pllp <= 8) && (pllq >= 1) && (pllq <= 31)) {
 		uint32_t cfg = (src == STM32_CLOCKSOURCE_HSE) ? RCC_PLLCFGR_PLLSRC : 0;
 		cfg |= pllm << 0;
@@ -231,7 +231,7 @@ uint8_t stm32_rccLowlevelSetupPLL(STM32ClockSource src, uint32_t pllm, uint32_t 
 	return 0;
 }
 		
-uint8_t stm32_rccSetupPLL(STM32ClockSource src, uint32_t inClk, uint32_t outClk) {
+BOOL stm32_rccSetupPLL(STM32ClockSource src, uint32_t inClk, uint32_t outClk) {
 	if (((inClk % 1000000) == 0) && ((outClk % 1000000) == 0)) {
 		uint32_t pllm = inClk / 1000000;
 		uint32_t plln, pllp;
@@ -252,7 +252,7 @@ uint8_t stm32_rccSetupPLL(STM32ClockSource src, uint32_t inClk, uint32_t outClk)
 }
 #endif
 
-uint8_t stm32_rccUsePLL(STM32ClockSource src, uint32_t srcFreq, uint32_t pllFreq) {
+BOOL stm32_rccUsePLL(STM32ClockSource src, uint32_t srcFreq, uint32_t pllFreq) {
 	if ((src != STM32_CLOCKSOURCE_HSE) && (src != STM32_CLOCKSOURCE_HSI)) return 0;
 	stm32_rccUseHSI();
 	stm32_rccEnableClockSource(src);

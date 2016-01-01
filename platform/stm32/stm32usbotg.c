@@ -30,7 +30,7 @@ static void STM32USBDriverClass_setAddress(USBDriverClass *_usb, uint8_t addr) {
 	usb->deviceRegs->DCFG = (usb->deviceRegs->DCFG & ~OTG_FS_DEVICE_FS_DCFG_DAD_MASK) | ((uint32_t)addr << OTG_FS_DEVICE_FS_DCFG_DAD_OFFSET);
 }
 
-static uint8_t STM32USBDriverClass_epSetup(USBDriverClass *_usb, uint8_t ep, USBEndpointType type, uint16_t bufSize, USBEndpointCallback callback, void *arg) {
+static BOOL STM32USBDriverClass_epSetup(USBDriverClass *_usb, uint8_t ep, USBEndpointType type, uint16_t bufSize, USBEndpointCallback callback, void *arg) {
 	STM32USBDriverClass *usb = STM32_USB_DRIVER_CLASS(_usb);
 #ifdef DEBUG
 	ioStreamPrintf(&serialPort, "epSetup(%i)\r\n", ep);
@@ -166,7 +166,7 @@ void STM32USBDriverClass_epStartRx(USBDriverClass *_usb, uint8_t ep) {
 	epRegs->CTL |= OTG_FS_DEVICE_FS_DIEPCTL0_EPENA | OTG_FS_DEVICE_FS_DIEPCTL0_CNAK;
 }
 
-uint8_t STM32USBDriverClass_epReady(USBDriverClass *_usb, uint8_t ep) {
+BOOL STM32USBDriverClass_epReady(USBDriverClass *_usb, uint8_t ep) {
 	return 0;
 }
 

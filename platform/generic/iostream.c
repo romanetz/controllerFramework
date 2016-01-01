@@ -4,7 +4,7 @@
 
 #ifdef USE_CLASSES
 
-int ioStreamVPrintfTimeout(void *stream, const char *fmt, va_list *arg, uint64_t timeout) {
+int ioStreamVPrintfTimeout(void *stream, const char *fmt, va_list *arg, timestamp_t timeout) {
 	char *str;
 	int r = vasprintf(&str, fmt, *arg);
 	ioStreamWriteTimeout(stream, str, r, timeout);

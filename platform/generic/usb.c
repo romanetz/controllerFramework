@@ -52,16 +52,16 @@ static const USBStringDescriptor *usbDriverGetStringDescriptor(USBDriverClass *u
 	return NULL;
 }
 
-static uint8_t usbDriverSetCurrentConfig(USBDriverClass *usb, uint8_t index) {
+static BOOL usbDriverSetCurrentConfig(USBDriverClass *usb, uint8_t index) {
 	int i;
 	for (i = 0; i < usb->deviceDescr->bNumConfigurations; i++) {
 		if (usb->configs[i]->bConfigurationValue == index) {
 			usb->curConfig = usb->configs[i];
 			usbDriverCallHook(usb, setConfigHook, usb, usb->curConfig);
-			return 1;
+			return TRUE;
 		}
 	}
-	return 0;
+	return FALSE;
 }
 
 static const USBDescriptor *usbDriverGetDescriptor(USBDriverClass *usb, uint8_t type, uint8_t index) {
@@ -80,7 +80,7 @@ static const USBDescriptor *usbDriverGetDescriptor(USBDriverClass *usb, uint8_t 
 	return descr;
 }
 
-static uint8_t usbDriverHandleDeviceSetupRequest(USBDriverClass *usb, USBSetupRequest *rq) {
+static BOOL usbDriverHandleDeviceSetupRequest(USBDriverClass *usb, USBSetupRequest *rq) {
 	switch (rq->bRequest) {
 		case USB_REQ_STD_SET_ADDRESS:
 			usb->state = USB_DRIVER_SET_ADDRESS;
@@ -90,7 +90,7 @@ static uint8_t usbDriverHandleDeviceSetupRequest(USBDriverClass *usb, USBSetupRe
 				usbDriverSetAddress(usb, usb->address);
 				usbDriverCallHook(usb, setAddressHook, usb, usb->address);
 			}
-			return 1;
+			return TRUE;
 		case USB_REQ_STD_GET_DESCRIPTOR: {
 			uint8_t type = rq->wValue >> 8;
 			uint8_t index = rq->wValue & 0xFF;
@@ -104,29 +104,29 @@ static uint8_t usbDriverHandleDeviceSetupRequest(USBDriverClass *usb, USBSetupRe
 					len = rq->wLength;
 				}
 				usbDriverEp0Write(usb, descr, len);
-				return 1;
+				return TRUE;
 			}
 			break;
 		}
 		case USB_REQ_STD_GET_STATUS:
 			usbDriverEp0Write(usb, &usb->status, sizeof(uint16_t));
-			return 1;
+			return TRUE;
 		case USB_REQ_STD_SET_FEATURE:
 			if (rq->wValue == USB_DEVICE_FEATURE_REMOTE_WAKEUP) {
 				usb->status |= USB_DEVICE_STATUS_REMOTE_WAKEUP;
 			}
 			usbDriverEp0WriteZLP(usb);
-			return 1;
+			return TRUE;
 		case USB_REQ_STD_CLEAR_FEATURE:
 			if (rq->wValue == USB_DEVICE_FEATURE_REMOTE_WAKEUP) {
 				usb->status &= ~USB_DEVICE_STATUS_REMOTE_WAKEUP;
 			}
 			usbDriverEp0WriteZLP(usb);
-			return 1;
+			return TRUE;
 		case USB_REQ_STD_SET_CONFIGURATION:
 			if (usbDriverSetCurrentConfig(usb, rq->wValue)) {
 				usbDriverEp0WriteZLP(usb);
-				return 1;
+				return TRUE;
 			}
 			break;
 		case USB_REQ_STD_GET_CONFIGURATION: {
@@ -135,26 +135,26 @@ static uint8_t usbDriverHandleDeviceSetupRequest(USBDriverClass *usb, USBSetupRe
 				config = usb->curConfig->bConfigurationValue;
 			}
 			usbDriverEp0Write(usb, &config, sizeof(config));
-			return 1;
+			return TRUE;
 		}
 	}
-	return 0;
+	return FALSE;
 }
 
-static uint8_t usbDriverHandleInterfaceSetupRequest(USBDriverClass *usb, USBSetupRequest *rq) {
-	return 0;
+static BOOL usbDriverHandleInterfaceSetupRequest(USBDriverClass *usb, USBSetupRequest *rq) {
+	return FALSE;
 }
 
-static uint8_t usbDriverHandleEndpointSetupRequest(USBDriverClass *usb, USBSetupRequest *rq) {
-	return 0;
+static BOOL usbDriverHandleEndpointSetupRequest(USBDriverClass *usb, USBSetupRequest *rq) {
+	return FALSE;
 }
 
-static uint8_t usbDriverHandleSetupRequest(USBDriverClass *usb, USBSetupRequest *rq, uint8_t *data, uint16_t dataLen) {
+static BOOL usbDriverHandleSetupRequest(USBDriverClass *usb, USBSetupRequest *rq, uint8_t *data, uint16_t dataLen) {
 	USBDriverHooks *hooks = usb->hooks;
 	while (hooks) {
 		if (hooks->setupRequestHook) {
 			if (hooks->setupRequestHook(usb, rq, data, dataLen, hooks->arg)) {
-				return 1;
+				return TRUE;
 			}
 		}
 		hooks = hooks->next;
@@ -169,7 +169,7 @@ static uint8_t usbDriverHandleSetupRequest(USBDriverClass *usb, USBSetupRequest 
 				return usbDriverHandleEndpointSetupRequest(usb, rq);
 		}
 	}
-	return 0;
+	return FALSE;
 }
 
 static void usbDriverControlEpOutCallback(USBDriverClass *usb, uint8_t ep, uint8_t setup, void *arg) {

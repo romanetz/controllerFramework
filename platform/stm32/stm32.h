@@ -1,6 +1,7 @@
 #ifndef __STM32_H__
 #define __STM32_H__
 
+#include <generic.h>
 #include <arm-cm.h>
 #include <stm32defs.h>
 #include <stm32rcc.h>

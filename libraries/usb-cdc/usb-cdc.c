@@ -44,14 +44,14 @@ static void USBCDCClass_bulkOutCallback(USBDriverClass *usb, uint8_t ep, uint8_t
 	}
 }
 
-int USBCDCClass_writeTimeout(IOStreamClass *stream, const void *data, int len, uint64_t timeout) {
+int USBCDCClass_writeTimeout(IOStreamClass *stream, const void *data, int len, timestamp_t timeout) {
 	USBCDCClass *usbCdc = USB_CDC_CLASS(stream);
 	int r = queueWriteTimeout(&usbCdc->txQueue, data, len, timeout);
 	USBCDCClass_sendChunk(usbCdc);
 	return r;
 }
 
-int USBCDCClass_readTimeout(IOStreamClass *stream, void *buffer, int len, uint64_t timeout) {
+int USBCDCClass_readTimeout(IOStreamClass *stream, void *buffer, int len, timestamp_t timeout) {
 	USBCDCClass *usbCdc = USB_CDC_CLASS(stream);
 	return queueReadTimeout(&usbCdc->rxQueue, buffer, len, timeout);
 }
@@ -81,7 +81,7 @@ void USBCDCClass_setConfigHook(USBDriverClass *usb, const USBConfigDescriptor *c
 	}
 }
 
-uint8_t USBCDCClass_setupRequestHook(USBDriverClass *usb, USBSetupRequest *rq, uint8_t *data, uint16_t dataLen, void *arg) {
+BOOL USBCDCClass_setupRequestHook(USBDriverClass *usb, USBSetupRequest *rq, uint8_t *data, uint16_t dataLen, void *arg) {
 	USBCDCClass *usbCdc = USB_CDC_CLASS(arg);
 	if ((rq->bmRequestType & USB_REQ_TYPE_MASK) == USB_REQ_TYPE_CLASS) {
 		switch (rq->bRequest) {

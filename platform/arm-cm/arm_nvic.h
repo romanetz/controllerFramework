@@ -25,8 +25,8 @@ typedef struct NVICRegs {
 
 void nvicEnableIRQ(uint8_t index);
 void nvicDisableIRQ(uint8_t index);
-uint8_t nvicIRQEnabled(uint8_t index);
-uint8_t nvicIRQPending(uint8_t index);
+BOOL nvicIRQEnabled(uint8_t index);
+BOOL nvicIRQPending(uint8_t index);
 void nvicSetIRQPending(uint8_t index);
 void nvicClearIRQPending(uint8_t index);
 void nvicSetIRQPriority(uint8_t index, uint8_t priority);
