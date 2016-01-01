@@ -2,7 +2,7 @@
 
 #ifdef USE_CLASSES
 
-int i2cMasterWriteReadTimeout(void *i2c, int address, const void *txBuffer, int txCount, void *rxBuffer, int rxCount, timestamp_t timeout) {
+BOOL i2cMasterWriteReadTimeout(void *i2c, int address, const void *txBuffer, int txCount, void *rxBuffer, int rxCount, timestamp_t timeout) {
 	int transferCount = 1;
 	I2CTransfer transfers[2];
 	transfers[0].address = address;
@@ -14,7 +14,7 @@ int i2cMasterWriteReadTimeout(void *i2c, int address, const void *txBuffer, int 
 		transfers[1].count = rxCount;
 		transfers[1].buffer = (uint8_t*)rxBuffer;
 	}
-	return i2cMasterTransferTimeout(i2c, transfers, transferCount, timeout);
+	return i2cMasterTransferTimeout(i2c, transfers, transferCount, timeout) == transferCount;
 }
 
 #endif

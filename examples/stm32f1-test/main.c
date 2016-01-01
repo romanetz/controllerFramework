@@ -1,5 +1,6 @@
 #include <platform.h>
 #include <usb-cdc.h>
+#include <mpu6050.h>
 #include "usbdesc.h"
 
 STM32GPIOClass led1, led2;
@@ -25,21 +26,29 @@ void initPeripheral() {
 }
 
 USBCDCClass usbCdc;
+MPU6050Class mpu6050;
 
 int main(void) {
 	initPeripheral();
 	serialPortSetup(&usart1, 115200, SERIALPORT_FLOWCONTROL_NONE, SERIALPORT_PARITY_NONE, SERIALPORT_DATA_8BIT, SERIALPORT_STOP_1BIT);
 	usbCdcClassInit(&usbCdc, USB_DRIVER_CLASS(&usbDriver), 128, 128, 0x02 | USB_ENDPOINT_OUT, 64, 0x02 | USB_ENDPOINT_IN, 64, 0x01 | USB_ENDPOINT_IN, 8);
-	int i = 0;
+	mpu6050_classInit(&mpu6050, I2C_CLASS(&i2c1), MPU6050_DEFAULT_ADDRESS << 1);
+	BOOL mpu6050_error = TRUE;
 	while (1) {
 		gpioToggle(&led1);
 		usleep(250000);
 		gpioToggle(&led2);
-		uint8_t reg = 0x75;
-		uint8_t value = 0x00;
-		i2cMasterWriteReadTimeout(&i2c1, 0xD0, &reg, sizeof(reg), &value, sizeof(value), 10000);
-		ioStreamPrintf(&usart1, "Test: %i, value: %02X\r\n", i++, value);
-		//ioStreamPrintf(&usbCdc, "Test: %i, value: %02X\r\n", i++, value);
+		if (mpu6050_error && mpu6050_detect(&mpu6050)) {
+			ioStreamPrintf(&usbCdc, "MPU6050 detected\r\n");
+			mpu6050_error = !mpu6050_powerOn(&mpu6050);
+		}
+		if (!mpu6050_error) {
+			mpu6050_readData(&mpu6050);
+			ioStreamPrintf(&usbCdc, "Ax=%6i,Ay=%i,Az=%i,Gx=%i,Gy=%i,Gz=%i,T=%i\r\n", mpu6050.rawData.accelX, mpu6050.rawData.accelY,
+				mpu6050.rawData.accelZ, mpu6050.rawData.gyroX, mpu6050.rawData.gyroY, mpu6050.rawData.gyroZ, mpu6050.rawData.temperature);
+		} else {
+			ioStreamPrintf(&usbCdc, "Failed to detect MPU6050\r\n");
+		}
 	}
 	return 0;
 }

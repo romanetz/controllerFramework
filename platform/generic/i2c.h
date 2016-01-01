@@ -27,7 +27,7 @@ struct I2CClass {
 #define i2cMasterTransferTimeout(i2c, transfers, transferCount, timeout) I2C_CLASS(i2c)->masterTransferTimeout(I2C_CLASS(i2c), transfers, transferCount, timeout)
 #define i2cMasterTransfer(i2c, transfers, transferCount) i2cMasterTransferTimeout(i2c, transfers, transferCount, -1)
 
-int i2cMasterWriteReadTimeout(void *i2c, int address, const void *txBuffer, int txCount, void *rxBuffer, int rxCount, timestamp_t timeout);
+BOOL i2cMasterWriteReadTimeout(void *i2c, int address, const void *txBuffer, int txCount, void *rxBuffer, int rxCount, timestamp_t timeout);
 #define i2cMasterWriteRead(i2c, address, txBuffer, txCount, rxBuffer, rxCount) i2cMasterWriteReadTimeout(i2c, address, txBuffer, txCount, rxBuffer, rxCount, -1)
 
 #endif

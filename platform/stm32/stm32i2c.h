@@ -20,8 +20,8 @@ BOOL stm32_i2cMasterSendByte(volatile STM32I2CRegs *i2c, uint8_t data, timestamp
 int stm32_i2cMasterSendBytes(volatile STM32I2CRegs *i2c, const uint8_t *data, int count, timestamp_t timeout);
 BOOL stm32_i2cMasterRecvByte(volatile STM32I2CRegs *i2c, uint8_t *buffer, BOOL lastByte, timestamp_t timeout);
 int stm32_i2cMasterRecvBytes(volatile STM32I2CRegs *i2c, uint8_t *buffer, int count, timestamp_t timeout);
-BOOL stm32_i2cMasterTransfer(volatile STM32I2CRegs *i2c, uint8_t address, uint8_t *buffer, int count, timestamp_t timeout);
 void stm32_i2cMasterStop(volatile STM32I2CRegs *i2c);
+BOOL stm32_i2cMasterTransfer(volatile STM32I2CRegs *i2c, uint8_t address, uint8_t *buffer, int count, timestamp_t timeout);
 
 #ifdef USE_CLASSES
 

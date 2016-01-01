@@ -3,7 +3,7 @@ PROJECT_DIR = .
 FRAMEWORK_DIR = ../..
 CSOURCES = main.c
 USE_CLASSES=yes
-LIBRARIES = usb-cdc
+LIBRARIES = usb-cdc mpu6050
 PLATFORM = stm32f103ze
 
 include $(FRAMEWORK_DIR)/platform/rules.mk

@@ -109,6 +109,10 @@ int stm32_i2cMasterRecvBytes(volatile STM32I2CRegs *i2c, uint8_t *buffer, int co
 	return i;
 }
 
+void stm32_i2cMasterStop(volatile STM32I2CRegs *i2c) {
+	i2c->CR1 |= I2C1_CR1_STOP;
+}
+
 BOOL stm32_i2cMasterTransfer(volatile STM32I2CRegs *i2c, uint8_t address, uint8_t *buffer, int count, timestamp_t timeout) {
 	if (!stm32_i2cWaitReady(i2c, timeout)) return FALSE;
 	if (!stm32_i2cMasterStart(i2c, timeout)) return FALSE;
@@ -127,10 +131,6 @@ BOOL stm32_i2cMasterTransfer(volatile STM32I2CRegs *i2c, uint8_t address, uint8_
 	} while (0);
 	stm32_i2cMasterStop(i2c);
 	return FALSE;
-}
-
-void stm32_i2cMasterStop(volatile STM32I2CRegs *i2c) {
-	i2c->CR1 |= I2C1_CR1_STOP;
 }
 
 #ifdef USE_CLASSES
