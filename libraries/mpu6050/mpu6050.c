@@ -1,5 +1,7 @@
 #include <mpu6050.h>
 
+#ifdef USE_CLASSES
+
 MPU6050Class *mpu6050_classInit(MPU6050Class *mpu6050, I2CClass *i2c, uint8_t address) {
 	mpu6050->i2c = i2c;
 	mpu6050->address = address;
@@ -154,3 +156,5 @@ void mpu6050_parseData(MPU6050Class *mpu6050) {
 	mpu6050->gyroZ = mpu6050->gyroZScale * mpu6050->rawData.gyroZ + mpu6050->gyroZOffset;
 	mpu6050->temperature = mpu6050->rawData.temperature / 340.f + 36.53f;
 }
+
+#endif

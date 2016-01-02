@@ -2,6 +2,7 @@
 #include <usb-cdc.h>
 #include <mpu6050.h>
 #include <hmc5883.h>
+#include <ms5611.h>
 #include "usbdesc.h"
 
 STM32GPIOClass led1, led2;
@@ -29,6 +30,7 @@ void initPeripheral() {
 USBCDCClass usbCdc;
 MPU6050Class mpu6050;
 HMC5883Class hmc5883;
+MS5611Class ms5611;
 
 int main(void) {
 	initPeripheral();
@@ -36,8 +38,10 @@ int main(void) {
 	usbCdcClassInit(&usbCdc, USB_DRIVER_CLASS(&usbDriver), 128, 128, 0x02 | USB_ENDPOINT_OUT, 64, 0x02 | USB_ENDPOINT_IN, 64, 0x01 | USB_ENDPOINT_IN, 8);
 	mpu6050_classInit(&mpu6050, I2C_CLASS(&i2c1), MPU6050_DEFAULT_ADDRESS << 1);
 	hmc5883_classInit(&hmc5883, I2C_CLASS(&i2c1), HMC5883_I2C_ADDRESS << 1);
+	ms5611_classInit(&ms5611, I2C_CLASS(&i2c1), MS5611_DEFAULT_ADDRESS << 1);
 	BOOL mpu6050_error = TRUE;
 	BOOL hmc5883_error = TRUE;
+	BOOL ms5611_error = TRUE;
 	while (1) {
 		gpioToggle(&led1);
 		usleep(250000);
@@ -68,6 +72,18 @@ int main(void) {
 			ioStreamPrintf(&usbCdc, "Mx=%2.3f, My=%2.3f, Mz=%2.3f\r\n", hmc5883.magX, hmc5883.magY, hmc5883.magZ);
 		} else {
 			ioStreamPrintf(&usbCdc, "Failed to detect HMC5883\r\n");
+		}
+		if (ms5611_error) {
+			if (ms5611_detect(&ms5611)) {
+				ioStreamPrintf(&usbCdc, "MS5611 detected\r\n");
+				ms5611_error = !ms5611_reset(&ms5611, TRUE);
+			}
+		}
+		if (!ms5611_error) {
+			ms5611_error = !ms5611_convert(&ms5611, MS5611_OSR_4096);
+			ioStreamPrintf(&usbCdc, "P=%i, T=%3.2f\r\n", ms5611.pressure, ms5611.temperature);
+		} else {
+			ioStreamPrintf(&usbCdc, "Failed to detect MS5611\r\n");
 		}
 	}
 	return 0;

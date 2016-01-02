@@ -1,6 +1,8 @@
 #include <string.h>
 #include <hmc5883.h>
 
+#ifdef USE_CLASSES
+
 HMC5883Class *hmc5883_classInit(HMC5883Class *hmc5883, I2CClass *i2c, uint8_t address) {
 	hmc5883->i2c = i2c;
 	hmc5883->address = address;
@@ -136,3 +138,5 @@ void hmc5883_parseData(HMC5883Class *hmc5883) {
 	hmc5883->magY = hmc5883->magYScale * hmc5883->rawData.magY + hmc5883->magYOffset;
 	hmc5883->magZ = hmc5883->magZScale * hmc5883->rawData.magZ + hmc5883->magZOffset;
 }
+
+#endif
