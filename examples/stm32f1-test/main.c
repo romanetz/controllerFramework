@@ -1,6 +1,7 @@
 #include <platform.h>
 #include <usb-cdc.h>
 #include <mpu6050.h>
+#include <hmc5883.h>
 #include "usbdesc.h"
 
 STM32GPIOClass led1, led2;
@@ -21,25 +22,27 @@ void initPeripheral() {
 	stm32_gpioClassInit(&led1, GPIOE, STM32_GPIO0);
 	stm32_gpioClassInit(&led2, GPIOE, STM32_GPIO2);
 	stm32_usartClassInit(&usart1, USART1, 64, 64);
-	stm32_i2cClassInit(&i2c1, I2C1, 100000);
+	stm32_i2cClassInit(&i2c1, I2C1, 400000);
 	stm32_usbDriverClassInit(&usbDriver, &usbDeviceDescr, usbConfigs, usbStrings, 3);
 }
 
 USBCDCClass usbCdc;
 MPU6050Class mpu6050;
+HMC5883Class hmc5883;
 
 int main(void) {
 	initPeripheral();
 	serialPortSetup(&usart1, 115200, SERIALPORT_FLOWCONTROL_NONE, SERIALPORT_PARITY_NONE, SERIALPORT_DATA_8BIT, SERIALPORT_STOP_1BIT);
 	usbCdcClassInit(&usbCdc, USB_DRIVER_CLASS(&usbDriver), 128, 128, 0x02 | USB_ENDPOINT_OUT, 64, 0x02 | USB_ENDPOINT_IN, 64, 0x01 | USB_ENDPOINT_IN, 8);
 	mpu6050_classInit(&mpu6050, I2C_CLASS(&i2c1), MPU6050_DEFAULT_ADDRESS << 1);
+	hmc5883_classInit(&hmc5883, I2C_CLASS(&i2c1), HMC5883_I2C_ADDRESS << 1);
 	BOOL mpu6050_error = TRUE;
+	BOOL hmc5883_error = TRUE;
 	while (1) {
 		gpioToggle(&led1);
 		usleep(250000);
 		gpioToggle(&led2);
 		if (mpu6050_error) {
-			ioStreamPrintf(&usbCdc, "Trying to detect MPU6050...\r\n");
 			if (mpu6050_detect(&mpu6050)) {
 				ioStreamPrintf(&usbCdc, "MPU6050 detected\r\n");
 				mpu6050_error = !mpu6050_setup(&mpu6050, MPU6050_ACCELSCALE_2G, MPU6050_GYROSCALE_250DEG, TRUE);
@@ -51,6 +54,20 @@ int main(void) {
 			ioStreamPrintf(&usbCdc, "Ax=%2.3f,Ay=%2.3f,Az=%2.3f,T=%3.2f\r\n", mpu6050.accelX, mpu6050.accelY, mpu6050.accelZ, mpu6050.temperature);
 		} else {
 			ioStreamPrintf(&usbCdc, "Failed to detect MPU6050\r\n");
+		}
+		if (hmc5883_error) {
+			if (hmc5883_detect(&hmc5883)) {
+				ioStreamPrintf(&usbCdc, "HMC5883 detected\r\n");
+				hmc5883_error = !hmc5883_setup(&hmc5883, HMC5883_DATARATE_75HZ, HMC5883_GAIN_1_2GA, HMC5883_MODE_CONTINUOS,
+					HMC5883_MODE_NORMAL);
+			}
+		}
+		if (!hmc5883_error) {
+			hmc5883_error = !hmc5883_readData(&hmc5883);
+			hmc5883_parseData(&hmc5883);
+			ioStreamPrintf(&usbCdc, "Mx=%2.3f, My=%2.3f, Mz=%2.3f\r\n", hmc5883.magX, hmc5883.magY, hmc5883.magZ);
+		} else {
+			ioStreamPrintf(&usbCdc, "Failed to detect HMC5883\r\n");
 		}
 	}
 	return 0;
