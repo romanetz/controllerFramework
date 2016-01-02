@@ -7,6 +7,7 @@
 #include <stm32rcc.h>
 #include <stm32periphinfo.h>
 #include <stm32gpio.h>
+#include <stm32adc.h>
 #include <stm32usart.h>
 #include <stm32i2c.h>
 #include <stm32usb.h>

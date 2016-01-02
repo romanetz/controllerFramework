@@ -9,6 +9,7 @@ STM32GPIOClass led1, led2;
 STM32USARTClass usart1;
 STM32I2CClass i2c1;
 STM32USBDriverClass usbDriver;
+STM32ADCClass adc1;
 
 void initPeripheral() {
 	stm32_rccUsePLL(STM32_CLOCKSOURCE_HSE, 8000000, 72000000);
@@ -25,6 +26,8 @@ void initPeripheral() {
 	stm32_usartClassInit(&usart1, USART1, 64, 64);
 	stm32_i2cClassInit(&i2c1, I2C1, 400000);
 	stm32_usbDriverClassInit(&usbDriver, &usbDeviceDescr, usbConfigs, usbStrings, 3);
+	stm32_adcClassInit(&adc1, ADC1);
+	stm32_adcEnableTempSensor(ADC1);
 }
 
 USBCDCClass usbCdc;
@@ -85,6 +88,7 @@ int main(void) {
 		} else {
 			ioStreamPrintf(&usbCdc, "Failed to detect MS5611\r\n");
 		}
+		ioStreamPrintf(&usbCdc, "Temp = %i, Vref = %i\r\n", adcSingleConversion(&adc1, 16), adcSingleConversion(&adc1, 17));
 	}
 	return 0;
 }
