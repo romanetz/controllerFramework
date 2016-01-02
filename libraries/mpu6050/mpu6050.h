@@ -47,6 +47,8 @@ struct MPU6050Class {
 	float temperature;
 };
 
+#define MPU6050_CLASS(obj) ((MPU6050Class*)(obj))
+
 MPU6050Class *mpu6050_classInit(MPU6050Class *mpu6050, I2CClass *i2c, uint8_t address);
 
 BOOL mpu6050_writeByteReg(MPU6050Class *mpu6050, uint8_t reg, uint8_t value);

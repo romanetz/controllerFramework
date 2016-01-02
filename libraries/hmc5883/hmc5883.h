@@ -25,6 +25,8 @@ struct HMC5883Class {
 	float magZ, magZOffset, magZScale;
 };
 
+#define HMC5883_CLASS(obj) ((HMC5883Class*)(obj))
+
 HMC5883Class *hmc5883_classInit(HMC5883Class *hmc5883, I2CClass *i2c, uint8_t address);
 
 BOOL hmc5883_writeByteReg(HMC5883Class *hmc5883, uint8_t reg, uint8_t value);

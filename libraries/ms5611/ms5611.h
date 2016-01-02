@@ -23,6 +23,8 @@ struct MS5611Class {
 	float temperature;
 };
 
+#define MS5611_CLASS(obj) ((MS5611Class*)(obj))
+
 MS5611Class *ms5611_classInit(MS5611Class *ms5611, I2CClass *i2c, uint8_t addr);
 
 BOOL ms5611_sendCommand(MS5611Class *ms5611, uint8_t command, void *response, int responseSize);
