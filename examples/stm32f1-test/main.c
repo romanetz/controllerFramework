@@ -21,7 +21,7 @@ void initPeripheral() {
 	stm32_gpioClassInit(&led1, GPIOE, STM32_GPIO0);
 	stm32_gpioClassInit(&led2, GPIOE, STM32_GPIO2);
 	stm32_usartClassInit(&usart1, USART1, 64, 64);
-	stm32_i2cClassInit(&i2c1, I2C1, 400000);
+	stm32_i2cClassInit(&i2c1, I2C1, 100000);
 	stm32_usbDriverClassInit(&usbDriver, &usbDeviceDescr, usbConfigs, usbStrings, 3);
 }
 
@@ -38,14 +38,17 @@ int main(void) {
 		gpioToggle(&led1);
 		usleep(250000);
 		gpioToggle(&led2);
-		if (mpu6050_error && mpu6050_detect(&mpu6050)) {
-			ioStreamPrintf(&usbCdc, "MPU6050 detected\r\n");
-			mpu6050_error = !mpu6050_powerOn(&mpu6050);
+		if (mpu6050_error) {
+			ioStreamPrintf(&usbCdc, "Trying to detect MPU6050...\r\n");
+			if (mpu6050_detect(&mpu6050)) {
+				ioStreamPrintf(&usbCdc, "MPU6050 detected\r\n");
+				mpu6050_error = !mpu6050_setup(&mpu6050, MPU6050_ACCELSCALE_2G, MPU6050_GYROSCALE_250DEG, TRUE);
+			}
 		}
 		if (!mpu6050_error) {
-			mpu6050_readData(&mpu6050);
-			ioStreamPrintf(&usbCdc, "Ax=%6i,Ay=%i,Az=%i,Gx=%i,Gy=%i,Gz=%i,T=%i\r\n", mpu6050.rawData.accelX, mpu6050.rawData.accelY,
-				mpu6050.rawData.accelZ, mpu6050.rawData.gyroX, mpu6050.rawData.gyroY, mpu6050.rawData.gyroZ, mpu6050.rawData.temperature);
+			mpu6050_error = !mpu6050_readData(&mpu6050);
+			mpu6050_parseData(&mpu6050);
+			ioStreamPrintf(&usbCdc, "Ax=%2.3f,Ay=%2.3f,Az=%2.3f,T=%3.2f\r\n", mpu6050.accelX, mpu6050.accelY, mpu6050.accelZ, mpu6050.temperature);
 		} else {
 			ioStreamPrintf(&usbCdc, "Failed to detect MPU6050\r\n");
 		}
