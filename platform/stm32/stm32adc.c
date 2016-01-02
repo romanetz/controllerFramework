@@ -39,6 +39,8 @@ uint16_t stm32_adcConversionResult(volatile STM32ADCRegs *adc) {
 	return adc->DR;
 }
 
+#ifdef USE_CLASSES
+
 static adc_value_t STM32ADCClass_singleConversion(ADCClass *_adc, adc_channel_index_t channel) {
 	STM32ADCClass *adc = STM32_ADC_CLASS(_adc);
 	stm32_adcStartSingleConversion(adc->regs, channel);
@@ -52,3 +54,5 @@ STM32ADCClass *stm32_adcClassInit(STM32ADCClass *adc, volatile STM32ADCRegs *reg
 	stm32_adcEnable(adc->regs);
 	return adc;
 }
+
+#endif

@@ -10,6 +10,7 @@ STM32USARTClass usart1;
 STM32I2CClass i2c1;
 STM32USBDriverClass usbDriver;
 STM32ADCClass adc1;
+STM32TimerClass tim1;
 
 void initPeripheral() {
 	stm32_rccUsePLL(STM32_CLOCKSOURCE_HSE, 8000000, 72000000);
@@ -28,6 +29,7 @@ void initPeripheral() {
 	stm32_usbDriverClassInit(&usbDriver, &usbDeviceDescr, usbConfigs, usbStrings, 3);
 	stm32_adcClassInit(&adc1, ADC1);
 	stm32_adcEnableTempSensor(ADC1);
+	stm32_timerClassInit(&tim1, TIM1);
 }
 
 USBCDCClass usbCdc;
@@ -35,8 +37,15 @@ MPU6050Class mpu6050;
 HMC5883Class hmc5883;
 MS5611Class ms5611;
 
+void blink(TimerClass *timer, void *arg) {
+	gpioToggle(&led1);
+}
+
 int main(void) {
 	initPeripheral();
+	timerSetFrequency(&tim1, 1);
+	timerSetCallback(&tim1, blink, NULL);
+	timerStart(&tim1);
 	serialPortSetup(&usart1, 115200, SERIALPORT_FLOWCONTROL_NONE, SERIALPORT_PARITY_NONE, SERIALPORT_DATA_8BIT, SERIALPORT_STOP_1BIT);
 	usbCdcClassInit(&usbCdc, USB_DRIVER_CLASS(&usbDriver), 128, 128, 0x02 | USB_ENDPOINT_OUT, 64, 0x02 | USB_ENDPOINT_IN, 64, 0x01 | USB_ENDPOINT_IN, 8);
 	mpu6050_classInit(&mpu6050, I2C_CLASS(&i2c1), MPU6050_DEFAULT_ADDRESS << 1);
@@ -46,7 +55,7 @@ int main(void) {
 	BOOL hmc5883_error = TRUE;
 	BOOL ms5611_error = TRUE;
 	while (1) {
-		gpioToggle(&led1);
+		//gpioToggle(&led1);
 		usleep(250000);
 		gpioToggle(&led2);
 		if (mpu6050_error) {

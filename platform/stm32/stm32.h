@@ -8,6 +8,7 @@
 #include <stm32periphinfo.h>
 #include <stm32gpio.h>
 #include <stm32adc.h>
+#include <stm32timer.h>
 #include <stm32usart.h>
 #include <stm32i2c.h>
 #include <stm32usb.h>
