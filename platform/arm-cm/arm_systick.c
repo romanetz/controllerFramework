@@ -1,10 +1,11 @@
 #include <platform.h>
 
 static uint32_t sysTickFrequency;
-static volatile timestamp_t sysTickCounter;
+volatile timestamp_t sysTickCounter;
 
 ISR(SYSTICK_vect) {
 	sysTickCounter++;
+	executeTaskSheduler();
 }
 
 void sysTickSetClockSource(uint32_t src) {
@@ -77,5 +78,12 @@ void sysTickDelay(timestamp_t time) {
 }
 
 void usleep(timestamp_t time) {
-	sysTickDelay(time);
+	timestamp_t tickPeriod = 1000000 / sysTickFrequency;
+	if (time < tickPeriod) {
+		sysTickDelay(time);
+	} else {
+		if (!threadSleepUntil(sysTickCounter + time / tickPeriod)) {
+			sysTickDelay(time);
+		}
+	}
 }

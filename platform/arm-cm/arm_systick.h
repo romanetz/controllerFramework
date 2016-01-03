@@ -31,6 +31,8 @@ typedef struct SysTickRegs {
 
 #define SYSTICK_LOAD_MASK 0x00FFFFFF
 
+extern volatile timestamp_t sysTickCounter;
+
 void sysTickSetClockSource(uint32_t src);
 void sysTickSetReloadValue(uint32_t value);
 uint32_t sysTickGetReloadValue(void);
@@ -41,6 +43,7 @@ void sysTickDisableInterrupt(void);
 
 int sysTickSetup(uint32_t freq);
 uint32_t sysTickGetFrequency(void);
+#define sysTickGetTickCount() sysTickCounter
 timestamp_t sysTickTimestamp(void);
 void sysTickDelay(timestamp_t time);
 

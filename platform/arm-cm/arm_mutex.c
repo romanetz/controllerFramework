@@ -29,15 +29,17 @@ static BOOL tryLockMutex(volatile uint32_t *mutex) {
 
 void mutexInit(Mutex *mutex) {
 	mutex->state = 0;
+	eventSourceInit(&(mutex->eventSource));
 }
 
 void mutexDestroy(Mutex *mutex) {
-	(void)mutex;
+	eventSourceDestroy(&(mutex->eventSource));
 }
 
 BOOL mutexLockTimeout(Mutex *mutex, timestamp_t timeout) {
 	do {
 		if (tryLockMutex(&mutex->state)) return TRUE;
+		if (!eventSourceWaitSignalTimeout(&(mutex->eventSource), timeout)) return FALSE;
 	} while (timeout > 0);
 	return FALSE;
 }
@@ -49,4 +51,5 @@ void mutexLock(Mutex *mutex) {
 void mutexUnlock(Mutex *mutex) {
 	__dmb();
 	mutex->state = 0;
+	eventSourceSendSignal(&(mutex->eventSource));
 }

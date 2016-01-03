@@ -7,6 +7,8 @@
 QueueClass *queueInit(QueueClass *queue, int elementSize, int elementMaxCount) {
 	mutexInit(&queue->writeMutex);
 	mutexInit(&queue->readMutex);
+	eventSourceInit(&queue->writeEventSource);
+	eventSourceInit(&queue->readEventSource);
 	queue->elementSize = elementSize;
 	queue->elementMaxCount = 0;
 	queue->buffer = NULL;
@@ -23,6 +25,8 @@ QueueClass *queueNew(int elementSize, int elementMaxCount) {
 }
 
 void queueDestroy(QueueClass *queue) {
+	eventSourceDestroy(&queue->writeEventSource);
+	eventSourceDestroy(&queue->readEventSource);
 	mutexDestroy(&queue->readMutex);
 	mutexDestroy(&queue->writeMutex);
 	free(queue->buffer);
@@ -40,6 +44,7 @@ void queueClear(QueueClass *queue) {
 	queue->dataEnd = 0;
 	mutexUnlock(&queue->writeMutex);
 	mutexUnlock(&queue->readMutex);
+	eventSourceSendSignal(&queue->readEventSource);
 }
 
 void queueResize(QueueClass *queue, int newSize) {
@@ -54,6 +59,7 @@ void queueResize(QueueClass *queue, int newSize) {
 	queue->dataEnd = 0;
 	mutexUnlock(&queue->writeMutex);
 	mutexUnlock(&queue->readMutex);
+	eventSourceSendSignal(&queue->readEventSource);
 }
 
 int queueWrite(QueueClass *queue, const void *data, int count) {
@@ -85,7 +91,7 @@ int queueWriteTimeout(QueueClass *queue, const void *data, int count, timestamp_
 		}
 		mutexUnlock(&queue->writeMutex);
 		if (chunkCount <= 0) {
-			if (timeout == 0) break;
+			if (!eventSourceWaitSignalTimeout(&queue->readEventSource, timeout)) break;
 		}
 	}
 	return i;
@@ -117,7 +123,7 @@ int queueReadTimeout(QueueClass *queue, void *buffer, int count, timestamp_t tim
 		}
 		mutexUnlock(&queue->readMutex);
 		if (chunkCount <= 0) {
-			if (timeout == 0) break;
+			if (!eventSourceWaitSignalTimeout(&queue->writeEventSource, timeout)) break;
 		}
 	}
 	return i;

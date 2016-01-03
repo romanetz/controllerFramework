@@ -7,10 +7,13 @@ typedef struct QueueClass QueueClass;
 
 #include <generic.h>
 #include <mutex.h>
+#include <event.h>
 
 struct QueueClass {
 	Mutex writeMutex;
 	Mutex readMutex;
+	EventSource writeEventSource;
+	EventSource readEventSource;
 	int elementSize;
 	int elementMaxCount;
 	volatile int dataBegin;

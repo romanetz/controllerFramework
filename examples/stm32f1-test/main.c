@@ -12,7 +12,7 @@ STM32USBDriverClass usbDriver;
 STM32ADCClass adc1;
 STM32TimerClass tim1;
 
-void initPeripheral() {
+void initPeripheral(void) {
 	stm32_rccUsePLL(STM32_CLOCKSOURCE_HSE, 8000000, 72000000);
 	sysTickSetup(1000);
 	stm32_gpioPortEnable(GPIOA);
@@ -41,8 +41,21 @@ void blink(TimerClass *timer, void *arg) {
 	gpioToggle(&led1);
 }
 
-int main(void) {
+void secondThread(void *arg) {
+	while (1) {
+		gpioToggle(&led2);
+		usleep(250000);
+	}
+}
+
+void idleThread(void *arg) {
+	while (1);
+}
+
+void mainThread(void *arg) {
+	threadCreate("idle", THREAD_PRIORITY_IDLE, 128, idleThread, NULL);
 	initPeripheral();
+	threadCreate("second", THREAD_PRIORITY_NORMAL - 1, 1024, secondThread, NULL);
 	timerSetFrequency(&tim1, 1);
 	timerSetCallback(&tim1, blink, NULL);
 	timerStart(&tim1);
@@ -55,9 +68,7 @@ int main(void) {
 	BOOL hmc5883_error = TRUE;
 	BOOL ms5611_error = TRUE;
 	while (1) {
-		//gpioToggle(&led1);
-		usleep(250000);
-		gpioToggle(&led2);
+		usleep(1000000);
 		if (mpu6050_error) {
 			if (mpu6050_detect(&mpu6050)) {
 				ioStreamPrintf(&usbCdc, "MPU6050 detected\r\n");
@@ -99,5 +110,9 @@ int main(void) {
 		}
 		ioStreamPrintf(&usbCdc, "Temp = %i, Vref = %i\r\n", adcSingleConversion(&adc1, 16), adcSingleConversion(&adc1, 17));
 	}
+}
+
+int main(void) {
+	threadCreate("main", THREAD_PRIORITY_NORMAL, 1024, mainThread, NULL);
 	return 0;
 }

@@ -17,5 +17,7 @@
 #include <arm_scb.h>
 #include <arm_nvic.h>
 #include <arm_systick.h>
+#include <arm_thread.h>
+#include <arm_event.h>
 
 #endif
