@@ -1,19 +1,11 @@
-#ifndef __ARM_EVENT_H__
-#define __ARM_EVENT_H__
+#ifndef __POSIX_EVENT_H__
+#define __POSIX_EVENT_H__
 
 #include <event.h>
-#include <thread.h>
-
-typedef struct EventListener EventListener;
+#include <pthread.h>
 
 struct EventSource {
-	EventListener *firstListener;
-};
-
-struct EventListener {
-	EventListener *next;
-	Thread *thread;
-	BOOL fired;
+	pthread_cond_t condVar;
 };
 
 void eventSourceInit(EventSource *eventSource);

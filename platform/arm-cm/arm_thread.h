@@ -14,7 +14,6 @@ extern Thread *currentThread;
 extern Thread *nextThread;
 
 void platform_threadInit(Thread *thread, ThreadFunc func, void *arg);
-void platform_mainThreadInit(Thread *thread);
 
 void executeTaskSheduler(void);
 
